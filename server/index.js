@@ -63,12 +63,16 @@ io.on('connection', (socket) => {
 			socket.emit('navToLobby',{id: lobby.id})
 			socket.join(lobby.id);
 
-			const PlayersNameInLobby = [...lobby.clients].map(x => x.name);
-			console.log(PlayersNameInLobby + ' are in ' + lobby.id);
-			if(socket.rooms.has(lobby.id))
-					console.log('teeeest');
-			io.in(lobby.id).emit("playersInLobby", {players:PlayersNameInLobby});
-			console.log('should be emmited to ' + lobby.id);
+			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+			console.log(playersInRoom);
+			io.in(data.id).emit("playersInLobby", playersInRoom);
+			// const PlayersNameInLobby = [...lobby.clients].map(x => x.name);
+			// console.log(PlayersNameInLobby + ' are in ' + lobby.id);
+			// // if(socket.rooms.has(lobby.id))
+			// // 		console.log('socket is in room');
+			// io.in(lobby.id).emit("playersInLobby", {players:PlayersNameInLobby});
+			// console.log('C');
+			// console.log('should be emmited to ' + lobby.id);
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m has joined the lobby \x1b[36m\x1b[32m${lobby.id}\x1b[0m after creation`);
 		});
 
@@ -79,24 +83,27 @@ io.on('connection', (socket) => {
 			//If client join a lobby that doesn't exist, create it and add it to our map.
 			if(lobby === undefined)
 			{
-				const lobby = new Lobby(data.id);
+				// const lobby = new Lobby(data.id);
 
-				lobbies.set(data.id, lobby);
-				lobby.joinedBy(client);
-				socket.emit('navToLobby',{id: data.id})
-				socket.join(data.id);
-				const PlayersNameInLobby = [...lobby.clients].map(x => x.name);
-				console.log(PlayersNameInLobby + ' are in ' + data.id);
-				io.in(data.id).emit("playersInLobby", {players:PlayersNameInLobby});
+				// lobbies.set(data.id, lobby);
+				// lobby.joinedBy(client);
+				// socket.emit('navToLobby',{id: data.id})
+				// socket.join(data.id);
+				// const PlayersNameInLobby = [...lobby.clients].map(x => x.name);
+				// console.log(PlayersNameInLobby + ' are in ' + data.id);
+				// io.in(data.id).emit("playersInLobby", {players:PlayersNameInLobby});
+				// console.log('A');
 			}
 			else
 			{
 				lobby.joinedBy(client);
 				socket.emit('navToLobby',{id: data.id})
 				socket.join(data.id);
-				const PlayersNameInLobby = [...lobby.clients].map(x => x.name);
-				console.log(PlayersNameInLobby + ' are in ' + data.id);
-				io.in(data.id).emit("playersInLobby", {players:PlayersNameInLobby});
+				const playersInRoom = [...lobby.clients].map(x => ({name: x.name, status:x.readyToPlay}));
+				// console.log(PlayersNameInLobby + ' are in ' + data.id);
+				console.log(playersInRoom);
+				io.in(data.id).emit("playersInLobby", playersInRoom);
+				console.log('B');
 			}
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m has joined the lobby \x1b[36m\x1b[32m${data.id}\x1b[0m`);
 
@@ -144,26 +151,27 @@ io.on('connection', (socket) => {
 
 		socket.on('sendToChat', (data) => {
 					console.log(data);
-					socket.to(data.room).emit("receiveMssg", data);
-					const lobby = lobbies.get(data.room);
-					// console.log(lobbies);
-					// console.log(`send to ${data.room} the message ${data.message} to: ${lobby.clients}`)
+					io.in(data.lobbyId).emit("receiveMssg", data);
 			});
 
 			socket.on('getPlayers', (data) => {
-				console.log(data.lobbyId + 'loooooooool');
 				const lobby = lobbies.get(data.lobbyId);
-				const PlayersNameInLobby = [...lobby.clients].map(x => x.name);
-				console.log(PlayersNameInLobby + ' are in ' + data.lobbyId);
-				if(socket.rooms.has(data.lobbyId))
-					console.log('teeeest');
-				io.in(data.lobbyId).emit("playersInLobby", {players:PlayersNameInLobby});
-				//socket.to(data.lobbyId).emit("playersInLobby", {players:PlayersNameInLobby});
-				console.log('should be emmited to' + data.lobbyId);
+				const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+				// console.log(PlayersNameInLobby + ' are in ' + data.id);
+				console.log(playersInRoom);
+				// if(socket.rooms.has(data.lobbyId))
+				// 	console.log('socket is in room');
+				socket.emit("playersInLobby", playersInRoom);
 		});
 
 		socket.on('readyToPlay', (data) => {
-			console.log(socket.id + 'is ready to play in #' + data.room);
+			if(client.readyToPlay === false)
+				client.readyToPlay = true;
+			else
+				client.readyToPlay = false;
+			const lobby = lobbies.get(data.lobbyId);
+			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+			io.in(data.lobbyId).emit("playersInLobby", playersInRoom);
 		});
 });
 

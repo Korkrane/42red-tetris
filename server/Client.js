@@ -6,6 +6,7 @@ class Client{
       this.socket = socket;
       this.lobby = null;
       this.name = name;
+      this.readyToPlay = false;
     }
 
     // joinLobby(data)
