@@ -1,5 +1,5 @@
 import './App.css';
-import { Routes, Route, Switch } from 'react-router-dom';
+import { Routes, Route} from 'react-router-dom';
 import Menu from './components/Menu';
 import Lobby from './components/Lobby';
 

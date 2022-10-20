@@ -6,7 +6,7 @@ class Lobby{
       this.clients = new Set;
     }
 
-    join(client)
+    joinedBy(client)
     {
       if(client.lobby){
         throw new Error('Client already in a lobby');

@@ -8,35 +8,25 @@ class Client{
       this.name = name;
     }
 
-    send(data)
-    {
-        const msg = JSON.stringify(data)
+    // joinLobby(data)
+    // {
+    //     this.socket.emit('lobbyJoined', data);
+    // }
 
-        console.log(`Sending msg: ${msg}`);
-        // this.socket.send(msg, function ack(err) {
-        //     if(err){
-        //         console.log(`Message failed`, msg, err)
-        //     }
-        // })
-        // or
-        // this.socket.emit('message', msg);
-        this.socket.emit('lobbyJoined', msg);
-    }
+    // sendCheck(data)
+    // {
+    //     const msg = JSON.stringify(data)
 
-    sendCheck(data)
-    {
-        const msg = JSON.stringify(data)
-
-        console.log(`Sending check: ${msg}`);
-        // this.socket.send(msg, function ack(err) {
-        //     if(err){
-        //         console.log(`Message failed`, msg, err)
-        //     }
-        // })
-        // or
-        // this.socket.emit('message', msg);
-        this.socket.emit('lobbyChecked', msg);
-    }
+    //     console.log(`Sending check: ${msg}`);
+    //     // this.socket.send(msg, function ack(err) {
+    //     //     if(err){
+    //     //         console.log(`Message failed`, msg, err)
+    //     //     }
+    //     // })
+    //     // or
+    //     // this.socket.emit('message', msg);
+    //     this.socket.emit('lobbyChecked', msg);
+    // }
 
 
   }

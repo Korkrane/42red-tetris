@@ -1,22 +1,6 @@
 
 import styled from 'styled-components'
 
-// const Button = ({ onClick}) => (
-//   <StyledPlayButton onClick={onClick}>Solo</StyledPlayButton>
-// )
-
-// const JoinButton = ({ onClick}) => (
-//   <StyledJoinButton onClick={onClick}>Join a game</StyledJoinButton>
-// )
-
-// const LeaveButton = ({ onClick}) => (
-//   <StyledLeaveButton onClick={onClick}>Join a game</StyledLeaveButton>
-// )
-
-// const MultiButton = ({ onClick}) => (
-//   <StyledMultiButton onClick={onClick}>Multiplayer</StyledMultiButton>
-// )
-
 const Button = styled.button`
   display:flexbox;
   justify-content:center;
@@ -46,11 +30,11 @@ export const LeaveButton = styled(Button)`
 `;
 
 export const SoloButton = styled(Button)`
-  background: #333;
+  background: red;
 `;
 
 export const MultiButton = styled(Button)`
-  background: #333;
+  background: orange;
 `;
 
 export default Button;
