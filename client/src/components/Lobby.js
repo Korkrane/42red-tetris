@@ -9,8 +9,13 @@ import { Typography, TextField, IconButton } from '@mui/material';
 import { alignProperty } from '@mui/material/styles/cssUtils';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SendIcon from '@mui/icons-material/Send';
-
+import PlayArea from './PlayArea';
+import Players from './Players';
+import Chat from './Chat';
+import LobbyButton
+ from './LobbyButton';
 const Lobby = () => {
+
 
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
@@ -81,85 +86,14 @@ const Lobby = () => {
 
     return (
         <>
-            <Container maxWidth={false} disableGutters  sx={{height:'100vh', backgroundColor: "#4b4d4c"}}>
-                <Typography variant="h2" align="center">
-                    room: {location.state.lobbyId}
-                </Typography>
-                <Box position="absolute" right="25px" sx={{border:3, borderRadius:5, padding:3, backgroundColor: "#fb44" }}>
-                    <Box sx={{backgroundColor: "#5d5f", border:3, borderRadius:5}} top="25px" mb={1} pb={1}>
-                        <Typography variant="h5" align="center">
-                            players
-                        </Typography>
-                        {
-                            <Box>
-                            {players.map(item =>(
-                                <Box display='flex'>
-                                        <Box sx={{ flexGrow: 1 }} ml={1}>{item.name}</Box>
-                                        <Box mr={2}>{item.status ? <CheckCircleIcon color="success" fontSize="small" sx={{ bottom: 45 }} /> : <CancelIcon color="error" fontSize="small" />}</Box>
-                                </Box>
-
-                            ))}
-                            </Box>
-                        }
-
+            <Box sx={{ display: 'flex', maxHeight: '100%', minHeight: '100%', minWidth: '100%', justifyContent: 'flex-start', backgroundColor: "#4b4d4c"}}>
+                    <PlayArea players={players} />
+					<Box m={2} sx={{ maxHeight: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "#fb44" }}>
+                        <Players players={players}/>
+                        <Chat messages={messages} sendMessage={sendMessage} setMessage={setMessage} message={message} />
+                        <LobbyButton leaveLobby={leaveLobby} setPlayerReady={setPlayerReady} flag={flag}/>
                     </Box>
-                    <Box bottom="25px" mb={1}
-                        sx={{backgroundColor: "#15f", border:3, borderRadius:5}}>
-                        <Typography variant="h5" align="center">
-                            messages
-                        </Typography>
-                        <Box
-                        sx={{
-                            mb: 2,
-                            display: "flex",
-                            flexDirection: "column",
-                            height: 400,
-                            width: 300,
-                            overflow: "hidden",
-                            overflowY: "scroll",
-                            wordWrap: 'break-word',
-                            '&::-webkit-scrollbar': {
-                                width: '10px'
-                              },
-                              '&::-webkit-scrollbar-track': {
-                                boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
-                                webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
-                              },
-                              '&::-webkit-scrollbar-thumb': {
-                                backgroundColor: '#4444',
-                                outline: '1px solid slategrey'
-                              }
-                            }}
-                        >
-                        {
-                            <div>
-                                {messages.map(item => (
-                                    <div>{item.name}: {item.message}</div>
-                                ))}
-                            </div>
-                        }
-                        </Box>
-                        <Box sx={{display:"flex", justifyContent: 'center'}} m={2}>
-                            <TextField size="small" variant="outlined" placeholder="Your message..." value={message}
-                            onChange={(event) => {
-                                    setMessage(event.target.value)}}
-
-                            onKeyPress={(event) => {
-                                if (event.key === "Enter") {
-                                       sendMessage()}}}/>
-                            <IconButton onClick={sendMessage}> <SendIcon/></IconButton>
-                        </Box>
-
-                    </Box>
-                    <Box sx={{display:"flex", justifyContent: 'space-evenly'}}>
-                        <Button variant="contained" startIcon={<LogoutIcon />} onClick={leaveLobby}>Leave</Button>
-                        <Button variant="contained" startIcon={flag ? <CancelIcon />: <CheckCircleIcon />} onClick={setPlayerReady} color={flag ? "error" : "success"}>
-                        Ready
-                        </Button>
-                    </Box>
-
-                </Box>
-            </Container>
+            </Box>
         </>
     );
 }

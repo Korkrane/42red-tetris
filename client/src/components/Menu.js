@@ -107,7 +107,7 @@ const Menu = () => {
             <div className='Menu'>
                 <SoloButton onClick={handleOpenSolo}>Solo</SoloButton>
                 <Modal open={openSolo} onClose={handleCloseSolo}>
-                     <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, border: '2px solid #000', borderRadius:5, p: 4,   bgcolor: 'background.paper',}}>
+                     <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, border: '2px solid #000', borderRadius:5, p: 4, bgcolor: 'background.paper'}}>
                         <Typography id="modal-title-title-solo" variant="h6" component="h2">
                             Game Settings
                         </Typography>
@@ -137,7 +137,8 @@ const Menu = () => {
                             border: '2px solid',
                             borderColor: joinable ? '#000' : 'error.main',
                             borderRadius:5,
-                            p: 4}}>
+                            p: 4,
+                            bgcolor: 'background.paper'}}>
                         <Typography sx={{color: joinable ? '#000' : 'error.main'}} id="modal-modal-title" variant="h6" component="h2">
                            Game Settings {errorMessage}
                         </Typography>
