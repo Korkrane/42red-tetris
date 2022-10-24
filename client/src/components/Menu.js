@@ -12,19 +12,6 @@ import TagIcon from '@mui/icons-material/Tag';
 import InputAdornment from '@mui/material/InputAdornment';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    borderRadius:5,
-    boxShadow: 24,
-    p: 4,
-  };
-
 export const socket = socketIO.connect('http://localhost:4000');
 
 
@@ -47,12 +34,20 @@ const Menu = () => {
     const [lobbyIdInput, setLobbyIdInput] = useState('');
     const [openSolo, setOpenSolo] = useState(false);
 	const [openJoin, setOpenJoin] = useState(false);
+    const [joinable, setJoinable] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
 
         socket.on('navToLobby', (data) => {
             const hash = data.id
             navigate("/" + hash, {state:{lobbyId: data.id, userName:nameInput}});
+        });
+
+        socket.on('cantJoin', () => {
+            console.log('cant join lobby game is going on');
+            setJoinable(false);
+            setErrorMessage(' - game has started');
         });
 
         // socket.on('lobbyChecked', (...args) => {
@@ -73,6 +68,7 @@ const Menu = () => {
         return () => {
             socket.off('navToLobby');
             socket.off('lobbyChecked');
+            socket.off('cantJoin');
         };
     }, [navigate, nameInput]);
 
@@ -80,7 +76,11 @@ const Menu = () => {
     const handleOpenSolo = () => setOpenSolo(true);
     const handleCloseSolo = () => setOpenSolo(false);
 	const handleOpenJoin = () => setOpenJoin(true);
-    const handleCloseJoin = () => setOpenJoin(false);
+    const handleCloseJoin = () => {
+        setOpenJoin(false);
+        setJoinable(true);
+        setErrorMessage('');
+    };
 
     const createLobby = () => {
         socket.emit('createLobby',{name:nameInput});
@@ -107,7 +107,7 @@ const Menu = () => {
             <div className='Menu'>
                 <SoloButton onClick={handleOpenSolo}>Solo</SoloButton>
                 <Modal open={openSolo} onClose={handleCloseSolo}>
-                     <Box sx={style}>
+                     <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, border: '2px solid #000', borderRadius:5, p: 4,   bgcolor: 'background.paper',}}>
                         <Typography id="modal-title-title-solo" variant="h6" component="h2">
                             Game Settings
                         </Typography>
@@ -129,9 +129,17 @@ const Menu = () => {
                 </Modal>
                 <JoinButton onClick={handleOpenJoin}>Join</JoinButton>
                 <Modal open={openJoin} onClose={handleCloseJoin}>
-                     <Box sx={style}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                           Game Settings
+                     <Box sx={{position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 400,
+                            border: '2px solid',
+                            borderColor: joinable ? '#000' : 'error.main',
+                            borderRadius:5,
+                            p: 4}}>
+                        <Typography sx={{color: joinable ? '#000' : 'error.main'}} id="modal-modal-title" variant="h6" component="h2">
+                           Game Settings {errorMessage}
                         </Typography>
                         <TextField sx={{ m: 2 }}
                             id="input-with-icon-textfield"

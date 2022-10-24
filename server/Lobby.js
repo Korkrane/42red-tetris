@@ -4,6 +4,7 @@ class Lobby{
     {
       this.id = id;
       this.clients = new Set;
+      this.hasStarted = false;
     }
 
     joinedBy(client)

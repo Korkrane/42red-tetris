@@ -96,6 +96,14 @@ io.on('connection', (socket) => {
 			}
 			else
 			{
+				console.log("eeeeeeeeeeeee");
+				console.log(lobby);
+				if(lobby.hasStarted === true)
+				{
+					console.log('couldnt join the lobby');
+					socket.emit("cantJoin");
+					return;
+				}
 				lobby.joinedBy(client);
 				socket.emit('navToLobby',{id: data.id})
 				socket.join(data.id);
@@ -120,6 +128,8 @@ io.on('connection', (socket) => {
 				console.log(`lobby ${lobby.id} is empty and has been deleted.`)
 			}
 			socket.leave(lobby.id);
+			const playersInRoom = [...lobby.clients].map(x => ({name: x.name, status:x.readyToPlay}));
+			io.in(lobbyIdToLeave).emit("playersInLobby", playersInRoom);
 		});
 
 		socket.on('checkLobbies', () => {
@@ -172,6 +182,18 @@ io.on('connection', (socket) => {
 			const lobby = lobbies.get(data.lobbyId);
 			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
 			io.in(data.lobbyId).emit("playersInLobby", playersInRoom);
+
+			console.log(playersInRoom);
+			const allTitlesAreTrue = playersInRoom.every(x => x.status === true);
+			if(allTitlesAreTrue === true)
+			{
+				console.log("all players are ready");
+				//block joinable lobby
+				lobby.hasStarted = true;
+				console.log(lobby);
+				io.in(data.lobbyId).emit("gameStart");
+			}
+
 		});
 });
 
