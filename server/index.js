@@ -136,22 +136,14 @@ io.on('connection', (socket) => {
 			console.log(lobbies);
 		});
 
-		// socket.on('checkLobby', (...args) => {
-		// 	const lobbyToCheck =JSON.parse(args[0]);
-		// 	console.log(`${socket.id} wants to check lobby \x1b[36m\x1b[32m${lobbyToCheck.id}\x1b[0m`);
-		// 	const lobby = lobbies.get(lobbyToCheck.id);
-		// 	if (lobby)
-		// 		client.sendCheck({exist:"true", id:lobby.id});
-		// 	else
-		// 		client.sendCheck({exist:"false", id:null});
-		// });
-
 		socket.on('disconnect', () => {
 			console.log('🔥: A user disconnected');
 			const lobby = client.lobby;
 			if(lobby){
 					console.log(`He was in ${lobby.id}`)
 					lobby.leave(client);
+					const playersInRoom = [...lobby.clients].map(x => ({name: x.name, status:x.readyToPlay}));
+					io.in(lobby.id).emit("playersInLobby", playersInRoom);
 					if(lobby.clients.size === 0) {
 						lobbies.delete(lobby.id)
 						console.log(`lobby ${lobby.id} is empty and has been deleted.`)
