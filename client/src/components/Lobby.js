@@ -1,19 +1,12 @@
-import { useEffect, useState, onKeyPress } from 'react';
+import { useEffect, useState } from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import { socket } from './Menu'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import Button from '@mui/material/Button';
-import CancelIcon from '@mui/icons-material/Cancel';
-import { Box, Container } from '@mui/system';
-import { Typography, TextField, IconButton } from '@mui/material';
-import { alignProperty } from '@mui/material/styles/cssUtils';
-import LogoutIcon from '@mui/icons-material/Logout';
-import SendIcon from '@mui/icons-material/Send';
+import { Box } from '@mui/system';
 import PlayArea from './PlayArea';
 import Players from './Players';
 import Chat from './Chat';
-import LobbyButton
- from './LobbyButton';
+import LobbyButton from './LobbyButton';
+
 const Lobby = () => {
 
 
@@ -56,9 +49,9 @@ const Lobby = () => {
             setPlayers(data);
         })
 
-        socket.on('gameStart', (data) => {
-            console.log("game gonna start");
-        })
+        // socket.on('gameStart', (data) => {
+        //     console.log("game gonna start");
+        // })
 
         if(once === false)
         {

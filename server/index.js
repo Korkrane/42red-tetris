@@ -119,6 +119,7 @@ io.on('connection', (socket) => {
 
 		socket.on('leaveLobby', (data) => {
 			const lobbyIdToLeave = data.lobbyId;
+			client.readyToPlay = false;
 			console.log(lobbyIdToLeave);
 			console.log(`${socket.id} wants to leave lobby \x1b[36m\x1b[32m${lobbyIdToLeave}\x1b[0m`);
 			const lobby = lobbies.get(lobbyIdToLeave);
