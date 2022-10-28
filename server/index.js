@@ -63,7 +63,7 @@ io.on('connection', (socket) => {
 			socket.emit('navToLobby',{id: lobby.id})
 			socket.join(lobby.id);
 
-			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay, stage:x.stage }));
 			console.log(playersInRoom);
 			io.in(data.id).emit("playersInLobby", playersInRoom);
 			// const PlayersNameInLobby = [...lobby.clients].map(x => x.name);
@@ -107,7 +107,7 @@ io.on('connection', (socket) => {
 				lobby.joinedBy(client);
 				socket.emit('navToLobby',{id: data.id})
 				socket.join(data.id);
-				const playersInRoom = [...lobby.clients].map(x => ({name: x.name, status:x.readyToPlay}));
+				const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay, stage: x.stage }));
 				// console.log(PlayersNameInLobby + ' are in ' + data.id);
 				console.log(playersInRoom);
 				io.in(data.id).emit("playersInLobby", playersInRoom);
@@ -129,7 +129,7 @@ io.on('connection', (socket) => {
 				console.log(`lobby ${lobby.id} is empty and has been deleted.`)
 			}
 			socket.leave(lobby.id);
-			const playersInRoom = [...lobby.clients].map(x => ({name: x.name, status:x.readyToPlay}));
+			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay, stage: x.stage }));
 			io.in(lobbyIdToLeave).emit("playersInLobby", playersInRoom);
 		});
 
@@ -143,7 +143,7 @@ io.on('connection', (socket) => {
 			if(lobby){
 					console.log(`He was in ${lobby.id}`)
 					lobby.leave(client);
-					const playersInRoom = [...lobby.clients].map(x => ({name: x.name, status:x.readyToPlay}));
+				const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay, stage: x.stage }));
 					io.in(lobby.id).emit("playersInLobby", playersInRoom);
 					if(lobby.clients.size === 0) {
 						lobbies.delete(lobby.id)
@@ -159,7 +159,7 @@ io.on('connection', (socket) => {
 
 			socket.on('getPlayers', (data) => {
 				const lobby = lobbies.get(data.lobbyId);
-				const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+				const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay, stage: x.stage }));
 				// console.log(PlayersNameInLobby + ' are in ' + data.id);
 				console.log(playersInRoom);
 				// if(socket.rooms.has(data.lobbyId))
@@ -173,7 +173,7 @@ io.on('connection', (socket) => {
 			else
 				client.readyToPlay = false;
 			const lobby = lobbies.get(data.lobbyId);
-			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay, stage: x.stage }));
 			io.in(data.lobbyId).emit("playersInLobby", playersInRoom);
 
 			console.log(playersInRoom);
@@ -187,6 +187,15 @@ io.on('connection', (socket) => {
 				io.in(data.lobbyId).emit("gameStart");
 			}
 
+		});
+
+		socket.on('playerMove', (data) => {
+			console.log('-----------------------')
+			console.log(data.player);
+			client.move(data);
+			const lobby = lobbies.get(data.lobbyId);
+			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay, stage: x.stage, player:x.player }));
+			io.in(data.lobbyId).emit("playerMoved", playersInRoom);
 		});
 });
 

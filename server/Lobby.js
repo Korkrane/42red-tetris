@@ -14,6 +14,7 @@ class Lobby{
       }
       this.clients.add(client);
       client.lobby = this;
+      client.createStage();
     }
 
     leave(client)
