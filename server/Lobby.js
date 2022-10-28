@@ -1,3 +1,5 @@
+const Game = require("./Game");
+
 class Lobby{
 
     constructor(id)
@@ -5,6 +7,7 @@ class Lobby{
       this.id = id;
       this.clients = new Set;
       this.hasStarted = false;
+      this.games = new Set;
     }
 
     joinedBy(client)
@@ -13,8 +16,11 @@ class Lobby{
         throw new Error('Client already in a lobby');
       }
       this.clients.add(client);
+      const game = new Game(client.name);
+      this.games.add(game);
       client.lobby = this;
-      client.createStage();
+      console.log(this.games);
+      // client.createStage();
     }
 
     leave(client)

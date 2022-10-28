@@ -47,15 +47,12 @@ const Lobby = () => {
             console.log('playersInLobby event received');
             console.log(data);
             setPlayers(data);
-        })
 
-        // socket.on('gameStart', (data) => {
-        //     console.log("game gonna start");
-        // })
+        })
 
         if(once === false)
         {
-            console.log('should pop once');
+            console.log('should pop once getplayers');
             socket.emit("getPlayers", { lobbyId: location.state.lobbyId });
         }
         setOnce(true);
@@ -64,6 +61,7 @@ const Lobby = () => {
             socket.off('gameStart');
             socket.off('receiveMssg');
             socket.off('playersInLobby');
+            socket.off('getPlayers');
         };
     }, [location.state.lobbyId, navigate, once, players])
 
@@ -80,7 +78,7 @@ const Lobby = () => {
     return (
         <>
             <Box sx={{ display: 'flex', maxHeight: '100%', minHeight: '100%', minWidth: '100%', justifyContent: 'flex-start', backgroundColor: "#4b4d4c"}}>
-                    <PlayArea players={players} />
+                    <PlayArea/>
 					<Box m={2} sx={{ maxHeight: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "#fb44" }}>
                         <Players players={players}/>
                         <Chat messages={messages} sendMessage={sendMessage} setMessage={setMessage} message={message} />
