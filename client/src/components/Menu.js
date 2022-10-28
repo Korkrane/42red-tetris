@@ -40,7 +40,7 @@ const Menu = () => {
     useEffect(() => {
 
         socket.on('navToLobby', (data) => {
-            const hash = data.id
+            const hash = data.id + '[' + nameInput + ']'
             navigate("/" + hash, {state:{lobbyId: data.id, userName:nameInput}});
         });
 
