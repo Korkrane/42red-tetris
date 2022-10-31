@@ -20,7 +20,7 @@ const Tetris = ({name, details}) => {
     // const [gameOver, setGameOver] = useState(false);
 
     // const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
-    // const [stage, setStage, rowsCleared] = useStage(client, player, resetPlayer);
+    // const [stage, setStage, rowsCleared] = useStage(details, player, resetPlayer);
     // const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(
     //     rowsCleared
     // );
@@ -33,7 +33,9 @@ const Tetris = ({name, details}) => {
     //     }
     // };
 
-    const keyUp = ({ keyCode }) => {
+    //on release keypress
+    const keyUp = (event) => {
+        console.log(event.keyCode)
         // if (!gameOver) {
         //     // Activate the interval again when user releases down arrow.
         //     if (keyCode === 40) {
@@ -113,19 +115,24 @@ const Tetris = ({name, details}) => {
     //         socket.off('gameStart');
     //     };
     // }, [startGame])
+    const gameInfo = () => {
+        console.log(details);
+    }
 
-    console.log('re-render');
-    console.log(details);
+    // console.log('re-render');
+    // console.log(details);
     return (
         <Box
             id="indivTetris"
-            role="button"
-            tabIndex="0"
+            // role="button"
             // onKeyDown={e => move(e)}
-            onKeyUp={keyUp}
+            // onKeyUp={keyUp}
+            // onKeyUp={e => keyUp(e)}
             sx={{ border: 1, borderRadius: 5, flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}
         >
             {/* <TetrisGrid stage={stage} /> */}
+            <div>{details.name} pressed {details.key}</div>
+            <button onClick={gameInfo}>game details</button>
             <Box sx={{
                 width: '100%',
                 maxWidth: '200px',

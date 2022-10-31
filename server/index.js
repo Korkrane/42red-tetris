@@ -169,12 +169,14 @@ io.on('connection', (socket) => {
 
 		socket.on('getGames', (data) => {
 			const lobby = lobbies.get(data.lobbyId);
-			const games = [...lobby.games].map(x => ({ name: x.playerName, stage: x.stage }));
+			const games = lobby.games.map(x => ({ name: x.playerName, stage: x.stage, key: x.keyCode }));
 			// console.log(PlayersNameInLobby + ' are in ' + data.id);
-			console.log(games);
+			// console.log(games);
+			console.log('lol')
 			// if(socket.rooms.has(data.lobbyId))
 			// 	console.log('socket is in room');
-			socket.emit("gamesInLobby", games);
+			// socket.emit("gamesInLobby", games);
+			io.in(data.lobbyId).emit("gamesInLobby", games);
 		});
 
 		socket.on('readyToPlay', (data) => {
@@ -200,12 +202,14 @@ io.on('connection', (socket) => {
 		});
 
 		socket.on('playerMove', (data) => {
-			console.log('-----------------------')
-			console.log(data.player);
-			client.move(data);
+			// console.log(data, client.name);
+
 			const lobby = lobbies.get(data.lobbyId);
-			const playersInRoom = [...lobby.clients].map(x => ({ name: x.name, status: x.readyToPlay}));
-			io.in(data.lobbyId).emit("playerMoved", playersInRoom);
+			const gameToUpdate = lobby.games.find(({ playerName }) => playerName === client.name);
+			gameToUpdate.updateKey(data.keyCode);
+			// console.log(gameToUpdate);
+			const gamess = lobby.games.map(x => ({ name: x.playerName, stage: x.stage, key: x.keyCode }));
+			io.in(data.lobbyId).emit("playerMoved", gamess);
 		});
 });
 

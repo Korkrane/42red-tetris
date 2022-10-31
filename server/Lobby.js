@@ -7,7 +7,7 @@ class Lobby{
       this.id = id;
       this.clients = new Set;
       this.hasStarted = false;
-      this.games = new Set;
+      this.games = new Array;
     }
 
     joinedBy(client)
@@ -17,7 +17,7 @@ class Lobby{
       }
       this.clients.add(client);
       const game = new Game(client.name);
-      this.games.add(game);
+      this.games.push(game);
       client.lobby = this;
       console.log(this.games);
       // client.createStage();

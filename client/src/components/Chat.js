@@ -11,6 +11,8 @@ const Chat = ({messages, sendMessage, setMessage, message}) => {
 
     })
 
+    console.log('render chat');
+
     return (
         <>
             <Box sx={{ maxHeight: '85%', display: 'flex', flexDirection: 'column', flexGrow: 1, backgroundColor: "success", border: 1 }}>
@@ -33,8 +35,8 @@ const Chat = ({messages, sendMessage, setMessage, message}) => {
                         outline: '1px solid slategrey'
                     }
                 }}>
-                    {messages.map(item => (
-                        <div>{item.name}: {item.message}</div>
+                    {messages.map((item, index) => (
+                        <div key={item.name + index}>{item.name}: {item.message}</div>
                     ))}
                 </Box>
             </Box>
