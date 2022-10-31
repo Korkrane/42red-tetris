@@ -8,22 +8,25 @@ import { usePlayer } from '../hooks/usePlayer';
 import { useStage } from '../hooks/useStage';
 import { useGameStatus } from '../hooks/useGameStatus';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { socket } from './Menu'
 
 // Components
-import TetrisGrid from './Stage';
 import Display from './Display';
-import { socket } from './Menu'
 import { Box } from '@mui/system';
+import TetrisGrid from './Stage';
+
 
 const Tetris = ({name, details}) => {
+    const log = console.log.bind(console);
+
     // const [dropTime, setDropTime] = useState(null);
     // const [gameOver, setGameOver] = useState(false);
 
     // const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
     // const [stage, setStage, rowsCleared] = useStage(details, player, resetPlayer);
-    // const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(
+    // const [details., setScore, rows, setRows, level, setLevel] = useGameStatus(
     //     rowsCleared
-    // );
+  // );
 
     // const location = useLocation();
 
@@ -34,25 +37,26 @@ const Tetris = ({name, details}) => {
     // };
 
     //on release keypress
-    const keyUp = (event) => {
-        console.log(event.keyCode)
-        // if (!gameOver) {
-        //     // Activate the interval again when user releases down arrow.
-        //     if (keyCode === 40) {
-        //         setDropTime(1000 / (level + 1));
-        //     }
-        // }
-    };
+    // const keyUp = (event) => {
+    //     log(event.keyCode)
+    //     // if (!gameOver) {
+    //     //     // Activate the interval again when user releases down arrow.
+    //     //     if (keyCode === 40) {
+    //     //         setDropTime(1000 / (level + 1));
+    //     //     }
+    //     // }
+    // };
 
     // const startGame = () => {
-    //     // Reset everything
-    //     setStage(client.stage); //before was createSStage();
-    //     setDropTime(1000);
-    //     resetPlayer();
-    //     setScore(0);
-    //     setLevel(0);
-    //     setRows(0);
-    //     setGameOver(false);
+    //     log('game gonna start');
+    //     // // Reset everything
+    //     // setStage(details.stage); //before was createSStage();
+    //     // setDropTime(1000);
+    //     // // resetPlayer();
+    //     // setScore(0);
+    //     // setLevel(0);
+    //     // setRows(0);
+    //     // setGameOver(false);
     // };
 
     // const drop = () => {
@@ -108,15 +112,16 @@ const Tetris = ({name, details}) => {
 
     // useEffect(() => {
     //     socket.on('gameStart', (data) => {
-    //         startGame();
+    //         log('game gonna start');
     //     })
 
     //     return () => {
     //         socket.off('gameStart');
     //     };
-    // }, [startGame])
+    // }, [log])
+
     const gameInfo = () => {
-        console.log(details);
+        log(details);
     }
 
     // console.log('re-render');
@@ -130,8 +135,8 @@ const Tetris = ({name, details}) => {
             // onKeyUp={e => keyUp(e)}
             sx={{ border: 1, borderRadius: 5, flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}
         >
-            {/* <TetrisGrid stage={stage} /> */}
-            <div>{details.name} pressed {details.key}</div>
+            <TetrisGrid stage={details.stage} />
+            <div>{details.playerName} pressed {details.keyCode}</div>
             <button onClick={gameInfo}>game details</button>
             <Box sx={{
                 width: '100%',
@@ -139,16 +144,16 @@ const Tetris = ({name, details}) => {
                 display: 'block',
                 padding: '0 20px'
             }}>
-                {/* {gameOver ? (
-                    <Display gameOver={gameOver} text="Game Over" />
+                {details.gameOver ? (
+                    <Display gameOver={details.gameOver} text="Game Over" />
                 ) : (
                     <div>
-                        <Display text={`Player: ${name}`} />
-                        <Display text={`Score: ${score}`} />
-                        <Display text={`rows: ${rows}`} />
-                        <Display text={`Level: ${level}`} />
+                        <Display text={`Player: ${details.playerName}`} />
+                        <Display text={`Score: ${details.score}`} />
+                        <Display text={`rows: ${details.rows}`} />
+                        <Display text={`Level: ${details.level}`} />
                     </div>
-                )} */}
+                )}
             </Box>
         </Box>
     );

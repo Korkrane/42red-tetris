@@ -55,23 +55,23 @@ export const usePlayer = () => {
         });
     }, []);
 
-    useEffect(() => {
-        socket.on('playerMoved', (data) => {
-            console.log('looooooool');
-            console.log(data);
-            console.log(data[0].player.pos.x);
-            setPlayer(prev => ({
-                ...prev,
-                pos: { x: (prev.pos.x = data[0].player.pos.x), y: (prev.pos.y = data[0].player.pos.y) },
-                tetromino:data[0].player.tetromino,
-                collided:data[0].player.collided,
-            }));
-        })
+    // useEffect(() => {
+    //     socket.on('playerMoved', (data) => {
+    //         console.log('looooooool');
+    //         console.log(data);
+    //         console.log(data[0].player.pos.x);
+    //         setPlayer(prev => ({
+    //             ...prev,
+    //             pos: { x: (prev.pos.x = data[0].player.pos.x), y: (prev.pos.y = data[0].player.pos.y) },
+    //             tetromino:data[0].player.tetromino,
+    //             collided:data[0].player.collided,
+    //         }));
+    //     })
 
-        return () => {
-            socket.off('playerMoved');
-        };
-    }, [])
+    //     return () => {
+    //         socket.off('playerMoved');
+    //     };
+    // }, [])
 
     return [player, updatePlayerPos, resetPlayer, playerRotate];
 };
