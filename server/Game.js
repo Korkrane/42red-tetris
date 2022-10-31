@@ -7,6 +7,10 @@ class Game {
         this.keyCode = null;
         this.playerName = name;
         this.stage = this.createStage();
+        this.gameOver = false;
+        this.score = 0;
+        this.rows = 0;
+        this.level = 0;
     }
 
     createStage()

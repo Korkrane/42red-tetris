@@ -42,11 +42,6 @@ const io = require("socket.io")(httpServer, {
   }
 });
 
-// const socket = require('socket.io')(http, {
-// 		cors: {
-// 				origin: "http://localhost:3000"
-// 		}
-// });
 
 io.on('connection', (socket) => {
 		console.log(`⚡: ${socket.id} user just connected!`);
@@ -169,7 +164,7 @@ io.on('connection', (socket) => {
 
 		socket.on('getGames', (data) => {
 			const lobby = lobbies.get(data.lobbyId);
-			const games = lobby.games.map(x => ({ name: x.playerName, stage: x.stage, key: x.keyCode }));
+			const games = lobby.games;
 			// console.log(PlayersNameInLobby + ' are in ' + data.id);
 			// console.log(games);
 			console.log('lol')
@@ -177,6 +172,12 @@ io.on('connection', (socket) => {
 			// 	console.log('socket is in room');
 			// socket.emit("gamesInLobby", games);
 			io.in(data.lobbyId).emit("gamesInLobby", games);
+		});
+
+		socket.on('getIndividualGame', (data) => {
+			const lobby = lobbies.get(data.lobbyId);
+			const game = lobby.games.find(({ playerName }) => playerName === client.name);
+			socket.emit("getIndividualGame", game);
 		});
 
 		socket.on('readyToPlay', (data) => {
@@ -195,21 +196,20 @@ io.on('connection', (socket) => {
 				console.log("all players are ready");
 				//block joinable lobby
 				lobby.hasStarted = true;
-				console.log(lobby);
+				// console.log(lobby);
 				io.in(data.lobbyId).emit("gameStart");
 			}
 
 		});
 
 		socket.on('playerMove', (data) => {
-			// console.log(data, client.name);
-
+			// console.log(data);
 			const lobby = lobbies.get(data.lobbyId);
 			const gameToUpdate = lobby.games.find(({ playerName }) => playerName === client.name);
 			gameToUpdate.updateKey(data.keyCode);
 			// console.log(gameToUpdate);
-			const gamess = lobby.games.map(x => ({ name: x.playerName, stage: x.stage, key: x.keyCode }));
-			io.in(data.lobbyId).emit("playerMoved", gamess);
+			const games = lobby.games;
+			io.in(data.lobbyId).emit("playerMoved", games);
 		});
 });
 
