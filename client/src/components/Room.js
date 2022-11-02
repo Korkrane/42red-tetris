@@ -5,9 +5,9 @@ import { Box } from '@mui/system';
 import PlayArea from './PlayArea';
 import Players from './Players';
 import Chat from './Chat';
-import LobbyButton from './LobbyButton';
+import RoomButton from './RoomButton';
 
-const Lobby = () => {
+const Room = () => {
 
 
     const [message, setMessage] = useState("");
@@ -19,13 +19,13 @@ const Lobby = () => {
 
     const sendMessage = () => {
         console.log('you sent a message');
-        socket.emit("sendToChat", {message, lobbyId:location.state.lobbyId, name:location.state.userName});
+        socket.emit("sendToChat", {message, roomId:location.state.roomId, name:location.state.userName});
         setMessage('');
     }
 
-    const leaveLobby = () => {
-        console.log('you leave lobby ' + location.state.lobbyId);
-        socket.emit("leaveLobby", {lobbyId:location.state.lobbyId});
+    const leaveRoom = () => {
+        console.log('you leave room ' + location.state.roomId);
+        socket.emit("leaveRoom", {roomId:location.state.roomId});
         return navigate('/');
     }
 
@@ -33,7 +33,7 @@ const Lobby = () => {
 
 
         window.onpopstate = () => {
-            socket.emit("leaveLobby", {lobbyId:location.state.lobbyId});
+            socket.emit("leaveRoom", {roomId:location.state.roomId});
             navigate('/');
           }
 
@@ -43,8 +43,8 @@ const Lobby = () => {
             setMessages(previousMessages => [...previousMessages, data]);
         })
 
-        socket.on('playersInLobby', (data) => {
-            console.log('playersInLobby event received');
+        socket.on('playersInRoom', (data) => {
+            console.log('playersInRoom event received');
             console.log(data);
             setPlayers(data);
         })
@@ -56,16 +56,16 @@ const Lobby = () => {
         if(once === false)
         {
             console.log('should pop once');
-            socket.emit("getPlayers", { lobbyId: location.state.lobbyId });
+            socket.emit("getPlayers", { roomId: location.state.roomId });
         }
         setOnce(true);
 
         return () => {
             socket.off('gameStart');
             socket.off('receiveMssg');
-            socket.off('playersInLobby');
+            socket.off('playersInRoom');
         };
-    }, [location.state.lobbyId, navigate, once, players])
+    }, [location.state.roomId, navigate, once, players])
 
     const [flag, setFlag] = useState(true);
 
@@ -73,7 +73,7 @@ const Lobby = () => {
 
     const setPlayerReady = () => {
       setFlag(!flag);
-        socket.emit('readyToPlay', { lobbyId: location.state.lobbyId });
+        socket.emit('readyToPlay', { roomId: location.state.roomId });
     };
 
 
@@ -84,11 +84,11 @@ const Lobby = () => {
 					<Box m={2} sx={{ maxHeight: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "#fb44" }}>
                         <Players players={players}/>
                         <Chat messages={messages} sendMessage={sendMessage} setMessage={setMessage} message={message} />
-                        <LobbyButton leaveLobby={leaveLobby} setPlayerReady={setPlayerReady} flag={flag}/>
+                        <RoomButton leaveRoom={leaveRoom} setPlayerReady={setPlayerReady} flag={flag}/>
                     </Box>
             </Box>
         </>
     );
 }
 
-export default Lobby;
+export default Room;

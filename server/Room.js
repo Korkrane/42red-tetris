@@ -1,4 +1,4 @@
-class Lobby{
+class Room{
 
     constructor(id)
     {
@@ -9,21 +9,21 @@ class Lobby{
 
     joinedBy(client)
     {
-      if(client.lobby){
-        throw new Error('Client already in a lobby');
+      if(client.room){
+        throw new Error('Client already in a room');
       }
       this.clients.add(client);
-      client.lobby = this;
+      client.room = this;
     }
 
     leave(client)
     {
-      if(client.lobby != this){
-        throw new Error('Client not in lobby');
+      if(client.room != this){
+        throw new Error('Client not in room');
       }
       this.clients.delete(client);
-      client.lobby = null;
+      client.room = null;
     }
   }
 
-module.exports = Lobby;
+module.exports = Room;

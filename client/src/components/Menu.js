@@ -16,14 +16,14 @@ export const socket = socketIO.connect('http://localhost:4000');
 
 
 
-// const initLobby = () => {
-//     const lobbyId = window.location.hash.split('#')[1];
-//     console.log(`initLobby: lobbyId is ${lobbyId}`);
+// const initRoom = () => {
+//     const roomId = window.location.hash.split('#')[1];
+//     console.log(`initRoom: roomId is ${roomId}`);
 
-//     if (lobbyId && typeof lobbyId !== "undefined") {
-//         console.log("does lobby exists ?");
-//         const data = JSON.stringify({ id: lobbyId })
-//         socket.emit('checkLobby', data)
+//     if (roomId && typeof roomId !== "undefined") {
+//         console.log("does room exists ?");
+//         const data = JSON.stringify({ id: roomId })
+//         socket.emit('checkRoom', data)
 //     }
 // }
 
@@ -31,7 +31,7 @@ const Menu = () => {
     let navigate = useNavigate();
 
     const [nameInput, setNameInput] = useState('');
-    const [lobbyIdInput, setLobbyIdInput] = useState('');
+    const [roomIdInput, setRoomIdInput] = useState('');
     const [openSolo, setOpenSolo] = useState(false);
 	const [openJoin, setOpenJoin] = useState(false);
     const [joinable, setJoinable] = useState(true);
@@ -39,35 +39,35 @@ const Menu = () => {
 
     useEffect(() => {
 
-        socket.on('navToLobby', (data) => {
+        socket.on('navToRoom', (data) => {
             const hash = data.id + '[' + nameInput + ']'
-            navigate("/" + hash, {state:{lobbyId: data.id, userName:nameInput}});
+            navigate("/" + hash, {state:{roomId: data.id, userName:nameInput}});
         });
 
         socket.on('cantJoin', () => {
-            console.log('cant join lobby game is going on');
+            console.log('cant join room game is going on');
             setJoinable(false);
             setErrorMessage(' - game has started');
         });
 
-        // socket.on('lobbyChecked', (...args) => {
-        //     const lobbyDetails = JSON.parse(args);
-        //     //console.log(lobbyDetails);
-        //     if (lobbyDetails.exist === "false") {
-        //         const customLobbyId = window.location.hash.split('#')[1];
-        //         const e = JSON.stringify({ type: 'custom', id: customLobbyId })
-        //         socket.emit('createLobby', e);
+        // socket.on('roomChecked', (...args) => {
+        //     const roomDetails = JSON.parse(args);
+        //     //console.log(roomDetails);
+        //     if (roomDetails.exist === "false") {
+        //         const customroomId = window.location.hash.split('#')[1];
+        //         const e = JSON.stringify({ type: 'custom', id: customroomId })
+        //         socket.emit('createroom', e);
         //     }
         //     else {
-        //         const lobbyId = JSON.stringify({ id: lobbyDetails.id })
-        //         socket.emit('joinLobby', lobbyId)
+        //         const roomId = JSON.stringify({ id: roomDetails.id })
+        //         socket.emit('joinroom', roomId)
         //     }
         // });
 
 
         return () => {
-            socket.off('navToLobby');
-            socket.off('lobbyChecked');
+            socket.off('navToRoom');
+            socket.off('roomChecked');
             socket.off('cantJoin');
         };
     }, [navigate, nameInput]);
@@ -82,24 +82,24 @@ const Menu = () => {
         setErrorMessage('');
     };
 
-    const createLobby = () => {
-        socket.emit('createLobby',{name:nameInput});
+    const createRoom = () => {
+        socket.emit('createRoom',{name:nameInput});
     }
 
-    const joinLobby = () => {
-        socket.emit('joinLobby', {name:nameInput, id:lobbyIdInput});
+    const joinRoom = () => {
+        socket.emit('joinRoom', {name:nameInput, id:roomIdInput});
     };
 
     const handleNameInputChange = (e) => {
         setNameInput(e.target.value);
     };
 
-    const handleLobbyIdInputChange = (e) => {
-        setLobbyIdInput(e.target.value);
+    const handleRoomIdInputChange = (e) => {
+        setRoomIdInput(e.target.value);
     };
 
-    const checkLobbies = () => {
-        socket.emit('checkLobbies');
+    const checkRooms = () => {
+        socket.emit('checkRooms');
     }
 
     return(
@@ -124,7 +124,7 @@ const Menu = () => {
                             variant="standard"
                             onChange= {handleNameInputChange}
                         />
-                        <Button sx={{bottom:45, marginLeft:10, position: "absolute"}} variant="contained"  disabled={nameInput === '' ? true : false} onClick={createLobby}>Join</Button>
+                        <Button sx={{bottom:45, marginLeft:10, position: "absolute"}} variant="contained"  disabled={nameInput === '' ? true : false} onClick={createRoom}>Join</Button>
                     </Box>
                 </Modal>
                 <JoinButton onClick={handleOpenJoin}>Join</JoinButton>
@@ -157,7 +157,7 @@ const Menu = () => {
                         />
                         <TextField sx={{ m: 2 }}
                             id="input-with-icon-textfield"
-                            label="lobby ID"
+                            label="room ID"
                             InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -166,12 +166,12 @@ const Menu = () => {
                             ),
                             }}
                             variant="standard"
-                            onChange= {handleLobbyIdInputChange}
+                            onChange= {handleRoomIdInputChange}
                         />
-                        <Button sx={{bottom:45, marginLeft:10, position: "absolute"}} variant="contained"  disabled={nameInput === '' || lobbyIdInput === '' ? true : false} onClick={joinLobby}>Join</Button>
+                        <Button sx={{bottom:45, marginLeft:10, position: "absolute"}} variant="contained"  disabled={nameInput === '' || roomIdInput === '' ? true : false} onClick={joinRoom}>Join</Button>
                     </Box>
                 </Modal>
-                <Button onClick={checkLobbies}>Check Lobbies on serv (debug)</Button>
+                <Button onClick={checkRooms}>Check Lobbies on serv (debug)</Button>
             </div>
         </>
     );

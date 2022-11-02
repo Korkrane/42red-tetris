@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import CancelIcon from '@mui/icons-material/Cancel';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-const LobbyButton = ({leaveLobby, setPlayerReady, flag}) => {
+const RoomButton = ({leaveLobby, setPlayerReady, flag}) => {
 
     return (
         <>
@@ -20,4 +20,4 @@ const LobbyButton = ({leaveLobby, setPlayerReady, flag}) => {
     );
 }
 
-export default LobbyButton;
+export default RoomButton;
