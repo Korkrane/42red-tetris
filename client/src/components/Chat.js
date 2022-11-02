@@ -33,8 +33,8 @@ const Chat = ({messages, sendMessage, setMessage, message}) => {
                         outline: '1px solid slategrey'
                     }
                 }}>
-                    {messages.map(item => (
-                        <div>{item.name}: {item.message}</div>
+                    {messages.map((item, index) => (
+                        <div key={index + item.name}>{item.name}: {item.message}</div>
                     ))}
                 </Box>
             </Box>

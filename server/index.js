@@ -24,31 +24,20 @@ io.on('connection', (socket) => {
 		const client = new Client(socket, helpers.createName())
 
 		socket.on('createRoom', (data) => {
-			client.name = data.name
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m creates a new Room`);
-
+			client.setName(data.name);
 			const room = new Room(helpers.createId());
-
 			rooms.set(room.id, room);
-			room.joinedBy(client);
-			socket.emit('navToRoom',{id: room.id})
+			room.addClient(client);
 			socket.join(room.id);
-
+			socket.emit('navToRoom',{id: room.id})
 			const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
-			console.log(playersInRoom);
 			io.in(data.id).emit("playersInRoom", playersInRoom);
-			// const PlayersNameInRoom = [...room.clients].map(x => x.name);
-			// console.log(PlayersNameInRoom + ' are in ' + room.id);
-			// // if(socket.rooms.has(room.id))
-			// // 		console.log('socket is in room');
-			// io.in(room.id).emit("playersInRoom", {players:PlayersNameInRoom});
-			// console.log('C');
-			// console.log('should be emmited to ' + room.id);
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m has joined the room \x1b[36m\x1b[32m${room.id}\x1b[0m after creation`);
 		});
 
 		socket.on('joinRoom', (data) => {
-			client.name = data.name;
+			client.setName(data.name);
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m wants to join room \x1b[36m\x1b[32m${data.id}\x1b[0m`);
 			const room = rooms.get(data.id);
 			//If client join a room that doesn't exist, create it and add it to our map.
@@ -57,7 +46,7 @@ io.on('connection', (socket) => {
 				// const room = new Room(data.id);
 
 				// rooms.set(data.id, room);
-				// room.joinedBy(client);
+				// room.addClient(client);
 				// socket.emit('navToRoom',{id: data.id})
 				// socket.join(data.id);
 				// const PlayersNameInRoom = [...room.clients].map(x => x.name);
@@ -67,15 +56,13 @@ io.on('connection', (socket) => {
 			}
 			else
 			{
-				console.log("eeeeeeeeeeeee");
-				console.log(room);
 				if(room.hasStarted === true)
 				{
 					console.log('couldnt join the room');
 					socket.emit("cantJoin");
 					return;
 				}
-				room.joinedBy(client);
+				room.addClient(client);
 				socket.emit('navToRoom',{id: data.id})
 				socket.join(data.id);
 				const playersInRoom = [...room.clients].map(x => ({name: x.name, status:x.readyToPlay}));
@@ -158,6 +145,28 @@ io.on('connection', (socket) => {
 				io.in(data.roomId).emit("gameStart");
 			}
 
+		});
+
+		socket.on('getGames', (data) => {
+			console.log('--------');
+			console.log(data);
+			const room = rooms.get(data.roomId);
+			const games = room.games;
+			io.in(data.roomId).emit("gamesInRoom", games);
+		});
+
+		socket.on('getIndividualGame', (data) => {
+			const room = rooms.get(data.roomId);
+			const game = room.games.find(({ playerName }) => playerName === client.name);
+			socket.emit("getIndividualGame", game);
+		});
+
+		socket.on('playerMove', (data) => {
+			const room = rooms.get(data.roomId);
+			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
+			gameToUpdate.updateKey(data.keyCode);
+			const games = room.games;
+			io.in(data.roomId).emit("playerMoved", games);
 		});
 });
 

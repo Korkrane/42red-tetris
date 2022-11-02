@@ -16,8 +16,8 @@ const Players = ({players}) => {
                             </Typography>
                             {
                                 <Box>
-                                    {players.map(item => (
-                                        <Box display='flex'>
+                                    {players.map((item, index) => (
+                                        <Box key={item.name + index} display='flex'>
                                             <Box sx={{ flexGrow: 1 }} ml={2}>{item.name}</Box>
                                             <Box mr={2}>{item.status ? <CheckCircleIcon color="success" fontSize="small"/> : <CancelIcon color="error" fontSize="small" />}</Box>
                                         </Box>

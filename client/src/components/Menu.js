@@ -1,5 +1,5 @@
 import socketIO from 'socket.io-client';
-import { JoinButton, MultiButton, SoloButton } from './Button';
+import { JoinButton, SoloButton } from './Button';
 import { useEffect, useState } from 'react';
 import * as React from 'react';
 import { useNavigate} from 'react-router-dom';

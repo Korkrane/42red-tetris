@@ -1,3 +1,5 @@
+const Game = require("./Game");
+
 class Room{
 
     constructor(id)
@@ -5,15 +7,20 @@ class Room{
       this.id = id;
       this.clients = new Set;
       this.hasStarted = false;
+      this.games = new Array;
     }
 
-    joinedBy(client)
+    addClient(client)
     {
       if(client.room){
         throw new Error('Client already in a room');
       }
       this.clients.add(client);
+
+      const game = new Game(client.name);
+      this.games.push(game);
       client.room = this;
+
     }
 
     leave(client)
