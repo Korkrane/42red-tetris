@@ -163,6 +163,8 @@ io.on('connection', (socket) => {
 
 		socket.on('playerMove', (data) => {
 			const room = rooms.get(data.roomId);
+			console.log(data);
+			console.log(room);
 			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
 			gameToUpdate.updateKey(data.keyCode);
 			const games = room.games;
