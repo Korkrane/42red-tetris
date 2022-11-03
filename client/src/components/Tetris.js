@@ -15,106 +15,106 @@ import { socket } from './Menu'
 import { Box } from '@mui/system';
 
 const Tetris = ({gameInfo}) => {
-    // const [dropTime, setDropTime] = useState(null);
-    // const [gameOver, setGameOver] = useState(false);
+    const [dropTime, setDropTime] = useState(null);
+    const [gameOver, setGameOver] = useState(false);
 
-    // const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
-    // const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
-    // const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(
-    //     rowsCleared
-    // );
+    const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
+    const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
+    const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(
+        rowsCleared
+    );
 
-    // const movePlayer = dir => {
-    //     if (!checkCollision(player, stage, { x: dir, y: 0 })) {
-    //         updatePlayerPos({ x: dir, y: 0 });
-    //     }
-    // };
+    const movePlayer = dir => {
+        if (!checkCollision(player, stage, { x: dir, y: 0 })) {
+            updatePlayerPos({ x: dir, y: 0 });
+        }
+    };
 
-    // const keyUp = ({ keyCode }) => {
-    //     if (!gameOver) {
-    //         // Activate the interval again when user releases down arrow.
-    //         if (keyCode === 40) {
-    //             setDropTime(1000 / (level + 1));
-    //         }
-    //     }
-    // };
+    const keyUp = ({ keyCode }) => {
+        if (!gameOver) {
+            // Activate the interval again when user releases down arrow.
+            if (keyCode === 40) {
+                setDropTime(1000 / (level + 1));
+            }
+        }
+    };
 
-    // const startGame = () => {
-    //     // Reset everything
-    //     setStage(createStage());
-    //     setDropTime(1000);
-    //     resetPlayer();
-    //     setScore(0);
-    //     setLevel(0);
-    //     setRows(0);
-    //     setGameOver(false);
-    // };
+    const startGame = () => {
+        // Reset everything
+        setStage(gameInfo.stage);
+        setDropTime(1000);
+        resetPlayer();
+        setScore(0);
+        setLevel(0);
+        setRows(0);
+        setGameOver(false);
+    };
 
-    // const drop = () => {
-    //     // Increase level when player has cleared 10 rows
-    //     if (rows > (level + 1) * 10) {
-    //         setLevel(prev => prev + 1);
-    //         // Also increase speed
-    //         setDropTime(1000 / (level + 1) + 200);
-    //     }
+    const drop = () => {
+        // Increase level when player has cleared 10 rows
+        if (rows > (level + 1) * 10) {
+            setLevel(prev => prev + 1);
+            // Also increase speed
+            setDropTime(1000 / (level + 1) + 200);
+        }
 
-    //     if (!checkCollision(player, stage, { x: 0, y: 1 })) {
-    //         updatePlayerPos({ x: 0, y: 1, collided: false });
-    //     } else {
-    //         // Game over!
-    //         if (player.pos.y < 1) {
-    //             console.log('GAME OVER!!!');
-    //             setGameOver(true);
-    //             setDropTime(null);
-    //         }
-    //         updatePlayerPos({ x: 0, y: 0, collided: true });
-    //     }
-    // };
+        if (!checkCollision(player, stage, { x: 0, y: 1 })) {
+            updatePlayerPos({ x: 0, y: 1, collided: false });
+        } else {
+            // Game over!
+            if (player.pos.y < 1) {
+                console.log('GAME OVER!!!');
+                setGameOver(true);
+                setDropTime(null);
+            }
+            updatePlayerPos({ x: 0, y: 0, collided: true });
+        }
+    };
 
-    // const dropPlayer = () => {
-    //     // We don't need to run the interval when we use the arrow down to
-    //     // move the tetromino downwards. So deactivate it for now.
-    //     setDropTime(null);
-    //     drop();
-    // };
+    const dropPlayer = () => {
+        // We don't need to run the interval when we use the arrow down to
+        // move the tetromino downwards. So deactivate it for now.
+        setDropTime(null);
+        drop();
+    };
 
-    // // This one starts the game
-    // // Custom hook by Dan Abramov
-    // useInterval(() => {
-    //     drop();
-    // }, dropTime);
+    // This one starts the game
+    // Custom hook by Dan Abramov
+    useInterval(() => {
+        drop();
+    }, dropTime);
 
-    // const move = ({ keyCode }) => {
-    //     if (!gameOver) {
-    //         if (keyCode === 37) {
-    //             movePlayer(-1);
-    //         } else if (keyCode === 39) {
-    //             movePlayer(1);
-    //         } else if (keyCode === 40) {
-    //             dropPlayer();
-    //         } else if (keyCode === 38) {
-    //             playerRotate(stage, 1);
-    //         }
-    //     }
-    // };
+    const move = ({ keyCode }) => {
+        if (!gameOver) {
+            if (keyCode === 37) {
+                movePlayer(-1);
+            } else if (keyCode === 39) {
+                movePlayer(1);
+            } else if (keyCode === 40) {
+                dropPlayer();
+            } else if (keyCode === 38) {
+                playerRotate(stage, 1);
+            }
+        }
+    };
 
-    // useEffect(() => {
-    //     socket.on('gameStart', (data) => {
-    //         console.log("game gonna start");
-    //         startGame();
-    //     })
+    useEffect(() => {
+        socket.on('gameStart', (data) => {
+            console.log("game gonna start");
+            startGame();
+        })
 
-    //     return () => {
-    //         socket.off('gameStart');
-    //     };
-    // }, [startGame])
+        return () => {
+            socket.off('gameStart');
+        };
+    }, [startGame])
 
     return (
         <Box
             id="indivTetris"
             sx={{ border: 1, borderRadius: 5, flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}
         >
-            <TetrisGrid stage={gameInfo.stage} />
+            <TetrisGrid stage={stage} />
             <Box sx={{
                 width: '100%',
                 maxWidth: '200px',

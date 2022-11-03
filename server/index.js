@@ -167,6 +167,7 @@ io.on('connection', (socket) => {
 			console.log(room);
 			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
 			gameToUpdate.updateKey(data.keyCode);
+			gameToUpdate.changeStage(data.keyCode);
 			const games = room.games;
 			io.in(data.roomId).emit("playerMoved", games);
 		});
