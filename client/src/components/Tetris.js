@@ -57,13 +57,14 @@ const Tetris = ({name, game, me}) => {
             pos: { x: (prev.pos.x += x), y: (prev.pos.y += y) },
             collided,
         }));
-        socket.emit('playerUpdate', { player: player, roomId: location.state.roomId });
+        // socket.emit('playerUpdate', { player: player, roomId: location.state.roomId });
     };
 
     const resetPlayer = useCallback(() => {
         setPlayer({
             pos: { x: STAGE_WIDTH / 2 - 2, y: 0 },
-            tetromino: randomTetromino().shape,
+            tetromino: game.tetromino.shape,
+            // tetromino: randomTetromino().shape,
             collided: false,
         });
     }, []);
@@ -106,13 +107,17 @@ const Tetris = ({name, game, me}) => {
             });
             // Then check if we collided
             if (player.collided) {
+                console.log('gonna reset')
                 resetPlayer();
                 return sweepRows(newStage);
             }
             return newStage;
         };
 
+        // console.log('before send:', stage)
+        // socket.emit("playerUpdate", { keyCode: 'a', roomId: location.state.roomId, stage: stage });
         setStage(prev => updateStage(prev));
+        console.log('update stage state')
     }, [player, resetPlayer]);
 
     ////USEGAME
@@ -165,7 +170,7 @@ const Tetris = ({name, game, me}) => {
     };
 
     const drop = () => {
-        // Increase level when player has cleared 10 rows
+        // // Increase level when player has cleared 10 rows
         // if (rows > (level + 1) * 10) {
         //     setLevel(prev => prev + 1);
         //     // Also increase speed
@@ -199,7 +204,6 @@ const Tetris = ({name, game, me}) => {
     }, dropTime);
 
     const move = ({ keyCode }) => {
-        console.log(Object.values(me)[0]);
         console.log(name);
         if (Object.values(me)[0] === name)
         {
@@ -214,17 +218,19 @@ const Tetris = ({name, game, me}) => {
                     playerRotate(stage, 1);
                 }
             }
-            socket.emit("playerMove", { keyCode: keyCode, roomId: location.state.roomId });
+            console.log('before send:', stage)
+            socket.emit("playerUpdate", { keyCode: keyCode, roomId: location.state.roomId, stage:stage });
         }
     };
 
-    useEffect(() => {
-        console.log('stage has changed')
-
-        // setStage(game.stage);
-        return () => {
-        };
-    }, [game.stage])
+    // useEffect(() => {
+    //     console.log('stage has changed')
+    //     console.log('stage of '+ game.playerName, stage[0]);
+    //     // console.log(player.tetromino);
+    //     // setStage(game.stage);
+    //     return () => {
+    //     };
+    // }, [stage])
 
     useEffect(() => {
         socket.on('gameStart', (data) => {
@@ -237,14 +243,15 @@ const Tetris = ({name, game, me}) => {
         };
     }, [startGame])
 
-    console.log('rerender');
+    console.log('game', game);
+    console.log('render'); console.log('stage of ' + game.playerName, stage[0]);
     return (
         <Box
             id="indivTetris"
             role="button"
             tabIndex="0"
             onKeyDown={e => move(e)}
-            onKeyUp={keyUp}
+            /*onKeyUp={keyUp}*/
             sx={{ border: 1, borderRadius: 5, flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}
         >
             <TetrisGrid stage={stage} />

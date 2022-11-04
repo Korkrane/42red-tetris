@@ -13,14 +13,12 @@ const PlayArea = (me) => {
     useEffect(() => {
 
         socket.on('gamesInRoom', (data) => {
-            console.log('gamesInRoom event received');
-            console.log(data);
+            console.log('gamesInRoom event received', data);
             setGames(data);
         })
 
         socket.on('playerMoved', (data) => {
-            console.log('playerMoved event received');
-            console.log(data);
+            console.log('playerMoved event received', data);
             setGames(data);
         })
 
@@ -36,6 +34,11 @@ const PlayArea = (me) => {
             socket.off('playerMoved');
         };
     }, [games, location.state.roomId, once])
+
+    // const move = (event) =>
+    // {
+    //     // socket.emit("playerMove", { keyCode: event.keyCode, roomId: location.state.roomId });
+    // }
 
     return(
         <>

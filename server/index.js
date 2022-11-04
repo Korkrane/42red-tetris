@@ -161,18 +161,25 @@ io.on('connection', (socket) => {
 			socket.emit("getIndividualGame", game);
 		});
 
-		socket.on('playerMove', (data) => {
-			const room = rooms.get(data.roomId);
-			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
-			gameToUpdate.updateKey(data.keyCode);
-			const games = room.games;
-			io.in(data.roomId).emit("playerMoved", games);
-		});
+		// socket.on('playerMove', (data) => {
+		// 	const room = rooms.get(data.roomId);
+		// 	const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
+		// 	gameToUpdate.updateKey(data.keyCode);
+		// 	const games = room.games;
+		// 	io.in(data.roomId).emit("playerMoved", games);
+		// });
 
 		socket.on('playerUpdate', (data) => {
+			// console.log('-receive-')
+			// console.log(data.stage);
+			// console.log('--')
 			const room = rooms.get(data.roomId);
 			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
-			gameToUpdate.updatePlayer(data.player);
+			gameToUpdate.updatePlayer(data.player, data.stage);
+			gameToUpdate.updateKey(data.keyCode);
+			// console.log('-send-')
+			// console.log(gameToUpdate.stage);
+			// console.log('--')
 			const games = room.games;
 			io.in(data.roomId).emit("playerMoved", games);
 		});

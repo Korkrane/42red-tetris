@@ -14,11 +14,13 @@ class Game{
         this.level = 0;
         this.player = this.initPlayer();
         this.tetrominoSeed = tetrominoSeed;
+        this.tetromino = this.tetrominoSeed[0];
     }
 
-    updatePlayer(player)
+    updatePlayer(player, stage)
     {
         this.player = player;
+        this.stage = stage;
     }
 
     initPlayer() {
