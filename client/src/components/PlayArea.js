@@ -39,7 +39,7 @@ const PlayArea = ({players}) => {
 
     const move = (event) => {
         console.log(event.keyCode)
-        socket.emit("playerMove", {keyCode: event.keyCode, roomId: location.state.lobbyId});
+        socket.emit("playerMove", {keyCode: event.keyCode, roomId: location.state.roomId});
     };
 
     return(
