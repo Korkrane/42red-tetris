@@ -168,6 +168,14 @@ io.on('connection', (socket) => {
 			const games = room.games;
 			io.in(data.roomId).emit("playerMoved", games);
 		});
+
+		socket.on('playerUpdate', (data) => {
+			const room = rooms.get(data.roomId);
+			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
+			gameToUpdate.updatePlayer(data.player);
+			const games = room.games;
+			io.in(data.roomId).emit("playerMoved", games);
+		});
 });
 
 httpServer.listen(PORT, () => {

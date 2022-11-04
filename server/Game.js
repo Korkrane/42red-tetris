@@ -5,9 +5,6 @@ class Game{
 
     constructor(name, tetrominoSeed)
     {
-        this.pos = null;
-        this.tetromino = null;
-        this.collided = false;
         this.keyCode = null;
         this.playerName = name;
         this.stage = this.createStage();
@@ -19,6 +16,10 @@ class Game{
         this.tetrominoSeed = tetrominoSeed;
     }
 
+    updatePlayer(player)
+    {
+        this.player = player;
+    }
 
     initPlayer() {
         return { tetromino: tetrominos.TETROMINOS[0].shape, collided: false, pos: this.initPosition() };

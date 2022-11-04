@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { TETROMINOS, randomTetromino } from '../tetrominos';
 import { STAGE_WIDTH, checkCollision, createStage } from '../gameHelpers';
+import { useLocation } from 'react-router-dom';
 
 // Custom Hooks
 import { useInterval } from '../hooks/useInterval';
@@ -13,7 +14,8 @@ import Display from './Display';
 import { socket } from './Menu'
 import { Box } from '@mui/system';
 
-const Tetris = ({name, game}) => {
+const Tetris = ({name, game, me}) => {
+    const location = useLocation();
     const [dropTime, setDropTime] = useState(null);
     const [gameOver, setGameOver] = useState(false);
 
@@ -55,6 +57,7 @@ const Tetris = ({name, game}) => {
             pos: { x: (prev.pos.x += x), y: (prev.pos.y += y) },
             collided,
         }));
+        socket.emit('playerUpdate', { player: player, roomId: location.state.roomId });
     };
 
     const resetPlayer = useCallback(() => {
@@ -163,23 +166,23 @@ const Tetris = ({name, game}) => {
 
     const drop = () => {
         // Increase level when player has cleared 10 rows
-        if (rows > (level + 1) * 10) {
-            setLevel(prev => prev + 1);
-            // Also increase speed
-            setDropTime(1000 / (level + 1) + 200);
-        }
+        // if (rows > (level + 1) * 10) {
+        //     setLevel(prev => prev + 1);
+        //     // Also increase speed
+        //     setDropTime(1000 / (level + 1) + 200);
+        // }
 
-        if (!checkCollision(player, stage, { x: 0, y: 1 })) {
-            updatePlayerPos({ x: 0, y: 1, collided: false });
-        } else {
-            // Game over!
-            if (player.pos.y < 1) {
-                console.log('GAME OVER!!!');
-                setGameOver(true);
-                setDropTime(null);
-            }
-            updatePlayerPos({ x: 0, y: 0, collided: true });
-        }
+        // if (!checkCollision(player, stage, { x: 0, y: 1 })) {
+        //     updatePlayerPos({ x: 0, y: 1, collided: false });
+        // } else {
+        //     // Game over!
+        //     if (player.pos.y < 1) {
+        //         console.log('GAME OVER!!!');
+        //         setGameOver(true);
+        //         setDropTime(null);
+        //     }
+        //     updatePlayerPos({ x: 0, y: 0, collided: true });
+        // }
     };
 
     const dropPlayer = () => {
@@ -196,18 +199,32 @@ const Tetris = ({name, game}) => {
     }, dropTime);
 
     const move = ({ keyCode }) => {
-        if (!gameOver) {
-            if (keyCode === 37) {
-                movePlayer(-1);
-            } else if (keyCode === 39) {
-                movePlayer(1);
-            } else if (keyCode === 40) {
-                dropPlayer();
-            } else if (keyCode === 38) {
-                playerRotate(stage, 1);
+        console.log(Object.values(me)[0]);
+        console.log(name);
+        if (Object.values(me)[0] === name)
+        {
+            if (!gameOver) {
+                if (keyCode === 37) {
+                    movePlayer(-1);
+                } else if (keyCode === 39) {
+                    movePlayer(1);
+                } else if (keyCode === 40) {
+                    dropPlayer();
+                } else if (keyCode === 38) {
+                    playerRotate(stage, 1);
+                }
             }
+            socket.emit("playerMove", { keyCode: keyCode, roomId: location.state.roomId });
         }
     };
+
+    useEffect(() => {
+        console.log('stage has changed')
+
+        // setStage(game.stage);
+        return () => {
+        };
+    }, [game.stage])
 
     useEffect(() => {
         socket.on('gameStart', (data) => {
@@ -220,6 +237,7 @@ const Tetris = ({name, game}) => {
         };
     }, [startGame])
 
+    console.log('rerender');
     return (
         <Box
             id="indivTetris"
@@ -244,7 +262,7 @@ const Tetris = ({name, game}) => {
                         <Display text={`Score: ${score}`} />
                         <Display text={`rows: ${rows}`} />
                         <Display text={`Level: ${level}`} />
-                        <Display text={`Key: a`} />
+                        <Display text={`Key: ${game.keyCode}`} />
                     </div>
                 )}
             </Box>
