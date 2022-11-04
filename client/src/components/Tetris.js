@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
-
-import { createStage, checkCollision } from '../gameHelpers';
+import React, { useEffect, useState, useCallback } from 'react';
+import { TETROMINOS, randomTetromino } from '../tetrominos';
+import { STAGE_WIDTH, checkCollision, createStage } from '../gameHelpers';
 
 // Custom Hooks
 import { useInterval } from '../hooks/useInterval';
-import { usePlayer } from '../hooks/usePlayer';
-import { useStage } from '../hooks/useStage';
-import { useGameStatus } from '../hooks/useGameStatus';
+// import { useStage } from '../hooks/useStage';
+// import { useGameStatus } from '../hooks/useGameStatus';
 
 // Components
 import TetrisGrid from './Stage';
@@ -18,11 +17,127 @@ const Tetris = ({name}) => {
     const [dropTime, setDropTime] = useState(null);
     const [gameOver, setGameOver] = useState(false);
 
-    const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
-    const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
-    const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(
-        rowsCleared
-    );
+    ////USEPLAYER
+    // const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
+    const [player, setPlayer] = useState({
+        pos: { x: 0, y: 0 },
+        tetromino: TETROMINOS[0].shape,
+        collided: false,
+    });
+
+    const rotate = (matrix, dir) => {
+        // Make the rows to become cols (transpose)
+        const rotatedTetro = matrix.map((_, index) =>
+            matrix.map(col => col[index]),
+        );
+        // Reverse each row to get a rotated matrix
+        if (dir > 0) return rotatedTetro.map(row => row.reverse());
+        return rotatedTetro.reverse();
+    };
+
+    const playerRotate = (stage, dir) => {
+        const clonedPlayer = JSON.parse(JSON.stringify(player));
+        clonedPlayer.tetromino = rotate(clonedPlayer.tetromino, dir);
+
+        const pos = clonedPlayer.pos.x;
+        let offset = 1;
+        while (checkCollision(clonedPlayer, stage, { x: 0, y: 0 })) {
+            clonedPlayer.pos.x += offset;
+            offset = -(offset + (offset > 0 ? 1 : -1));
+            if (offset > clonedPlayer.tetromino[0].length) {
+                rotate(clonedPlayer.tetromino, -dir);
+                clonedPlayer.pos.x = pos;
+                return;
+            }
+        }
+        setPlayer(clonedPlayer);
+    };
+
+    const updatePlayerPos = ({ x, y, collided }) => {
+        setPlayer(prev => ({
+            ...prev,
+            pos: { x: (prev.pos.x += x), y: (prev.pos.y += y) },
+            collided,
+        }));
+    };
+
+    const resetPlayer = useCallback(() => {
+        setPlayer({
+            pos: { x: STAGE_WIDTH / 2 - 2, y: 0 },
+            tetromino: randomTetromino().shape,
+            collided: false,
+        });
+    }, []);
+
+    // const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
+    /////USESTAGE
+    const [stage, setStage] = useState(createStage());
+    const [rowsCleared, setRowsCleared] = useState(0);
+
+    useEffect(() => {
+        setRowsCleared(0);
+
+        const sweepRows = newStage =>
+            newStage.reduce((ack, row) => {
+                if (row.findIndex(cell => cell[0] === 0) === -1) {
+                    setRowsCleared(prev => prev + 1);
+                    ack.unshift(new Array(newStage[0].length).fill([0, 'clear']));
+                    return ack;
+                }
+                ack.push(row);
+                return ack;
+            }, [])
+
+        const updateStage = prevStage => {
+            // First flush the stage
+            const newStage = prevStage.map(row =>
+                row.map(cell => (cell[1] === 'clear' ? [0, 'clear'] : cell)),
+            );
+
+            // Then draw the tetromino
+            player.tetromino.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) {
+                        newStage[y + player.pos.y][x + player.pos.x] = [
+                            value,
+                            `${player.collided ? 'merged' : 'clear'}`,
+                        ];
+                    }
+                });
+            });
+            // Then check if we collided
+            if (player.collided) {
+                resetPlayer();
+                return sweepRows(newStage);
+            }
+            return newStage;
+        };
+
+        setStage(prev => updateStage(prev));
+    }, [player, resetPlayer]);
+
+    ////USEGAME
+    // const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(
+    //     rowsCleared
+    // );
+    const [score, setScore] = useState(0);
+    const [rows, setRows] = useState(0);
+    const [level, setLevel] = useState(0);
+
+    const linePoints = [40, 100, 300, 1200];
+
+    const calcScore = useCallback(() => {
+        // We have score
+        if (rowsCleared > 0) {
+            // This is how original Tetris score is calculated
+            setScore(prev => prev + linePoints[rowsCleared - 1] * (level + 1));
+            setRows(prev => prev + rowsCleared);
+        }
+    }, [level, linePoints, rowsCleared]);
+
+    useEffect(() => {
+        calcScore();
+    }, [calcScore, rowsCleared, score]);
 
     const movePlayer = dir => {
         if (!checkCollision(player, stage, { x: dir, y: 0 })) {
