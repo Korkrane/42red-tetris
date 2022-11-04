@@ -33,7 +33,7 @@ const Room = () => {
     return (
         <>
             <Box sx={{ display: 'flex', maxHeight: '100%', minHeight: '100%', minWidth: '100%', justifyContent: 'flex-start', backgroundColor: "#4b4d4c"}}>
-                    <PlayArea players={players} />
+                    <PlayArea/>
                     <RoomDetails players={players}/>
             </Box>
         </>

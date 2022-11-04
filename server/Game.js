@@ -1,6 +1,9 @@
+
+const tetrominos = require('./tetrominos');
+
 class Game{
 
-    constructor(name)
+    constructor(name, tetrominoSeed)
     {
         this.pos = null;
         this.tetromino = null;
@@ -12,6 +15,17 @@ class Game{
         this.score = 0;
         this.rows = 0;
         this.level = 0;
+        this.player = this.initPlayer();
+        this.tetrominoSeed = tetrominoSeed;
+    }
+
+
+    initPlayer() {
+        return { tetromino: tetrominos.TETROMINOS[0].shape, collided: false, pos: this.initPosition() };
+    }
+
+    initPosition() {
+        return { x: 0, y: 0 };
     }
 
     createStage()

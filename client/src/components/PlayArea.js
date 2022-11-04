@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import {useLocation} from 'react-router-dom';
 import { socket } from './Menu'
 
-const PlayArea = ({players}) => {
+const PlayArea = () => {
 
     const [games, setGames] = useState([]);
     const [once, setOnce] = useState(false);
@@ -45,8 +45,8 @@ const PlayArea = ({players}) => {
     return(
         <>
             <Box tabIndex="0" onKeyDown={e => move(e)} id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, backgroundColor: "#fb44" }}>
-                {players.map((item, index) => (
-                    <Tetris key={item.name + index} name={item.name} />
+                {games.map((item, index) => (
+                    <Tetris key={item.playerName + index} name={item.playerName} game={item}/>
                 ))}
             </Box>
         </>

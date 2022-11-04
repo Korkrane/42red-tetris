@@ -13,17 +13,13 @@ import Display from './Display';
 import { socket } from './Menu'
 import { Box } from '@mui/system';
 
-const Tetris = ({name}) => {
+const Tetris = ({name, game}) => {
     const [dropTime, setDropTime] = useState(null);
     const [gameOver, setGameOver] = useState(false);
 
     ////USEPLAYER
     // const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
-    const [player, setPlayer] = useState({
-        pos: { x: 0, y: 0 },
-        tetromino: TETROMINOS[0].shape,
-        collided: false,
-    });
+    const [player, setPlayer] = useState(game.player);
 
     const rotate = (matrix, dir) => {
         // Make the rows to become cols (transpose)
@@ -71,7 +67,7 @@ const Tetris = ({name}) => {
 
     // const [stage, setStage, rowsCleared] = useStage(player, resetPlayer);
     /////USESTAGE
-    const [stage, setStage] = useState(createStage());
+    const [stage, setStage] = useState(game.stage);
     const [rowsCleared, setRowsCleared] = useState(0);
 
     useEffect(() => {
@@ -156,7 +152,7 @@ const Tetris = ({name}) => {
 
     const startGame = () => {
         // Reset everything
-        setStage(createStage());
+        setStage(game.stage);
         setDropTime(1000);
         resetPlayer();
         setScore(0);

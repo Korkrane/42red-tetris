@@ -1,4 +1,5 @@
 const Game = require("./Game");
+const tetrominos = require('./tetrominos');
 
 class Room{
 
@@ -8,6 +9,12 @@ class Room{
       this.clients = new Set;
       this.hasStarted = false;
       this.games = new Array;
+      this.tetrominoSeed = this.createTetrominoSeed()
+    }
+
+    createTetrominoSeed()
+    {
+      return Array.from({length:10}, () => tetrominos.randomTetromino())
     }
 
     addClient(client)
@@ -17,7 +24,7 @@ class Room{
       }
       this.clients.add(client);
 
-      const game = new Game(client.name);
+      const game = new Game(client.name, this.tetrominoSeed);
       this.games.push(game);
       client.room = this;
 
