@@ -148,6 +148,7 @@ io.on('connection', (socket) => {
 					game.setStage();
 				})
 				console.log('--end of foreach--')
+				console.log('emit gameStart');
 				io.in(data.roomId).emit("gameStart");
 			}
 

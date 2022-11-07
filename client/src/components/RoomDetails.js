@@ -45,7 +45,6 @@ const RoomDetails = ({players}) => {
         })
 
         return () => {
-            socket.off('gameStart');
             socket.off('receiveMssg');
         };
     }, [location.state.roomId, navigate, players])

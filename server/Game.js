@@ -16,6 +16,35 @@ class Game{
         this.tetromino = this.tetrominoSeed[0];
         this.i = 0;
         this.player = this.initPlayer();
+        this.miniStage = this.lol()
+        this.nextTetromino = null;
+    }
+
+    lol() {
+        return Array.from(Array(4), () => new Array(4).fill([0, 'clear']),);
+    }
+
+    setMiniStage(nextTetromino) {
+        this.nextTetromino = nextTetromino;
+        let clonedPlayer = { tetromino: this.nextTetromino.shape, pos: { x: 0, y: 0 }, collided:false }
+        console.log('real', this.player)
+        console.log('clone', clonedPlayer)
+
+        const newStage = this.miniStage.map(row =>
+            row.map(cell => (cell[1] === 'clear' ? [0, 'clear'] : cell)),
+        );
+        // Then draw the tetromino
+        clonedPlayer.tetromino.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) {
+                    newStage[y + clonedPlayer.pos.y][x + clonedPlayer.pos.x] = [
+                        value,
+                        `${clonedPlayer.collided ? 'merged' : 'clear'}`,
+                    ];
+                }
+            });
+        });
+        this.miniStage = newStage;
     }
 
     resetPlayer()
@@ -34,6 +63,8 @@ class Game{
         this.player.tetromino = this.tetromino.shape;
         this.player.pos = { x: 12 / 2 - 2, y: 0 };
         this.player.collided = false;
+
+
     }
 
     setStage()
@@ -59,7 +90,6 @@ class Game{
             // setStage(sweepRows(newStage));
         }
         this.stage = newStage;
-        console.log(this.player);
     }
 
     checkCollision(player, stage, { x: moveX, y: moveY }){
@@ -107,11 +137,24 @@ class Game{
             // Game over!
             if (this.player.pos.y < 1) {
                 console.log('GAME OVER!!!');
-                // setGameOver(true);
+                this.gameOver = true;
                 // setDropTime(null);
             }
             this.updatePlayerPos({ x: 0, y: 0, collided: true });
         }
+    }
+
+    sweepRows(newStage)
+    {
+            newStage.reduce((ack, row) => {
+                if (row.findIndex(cell => cell[0] === 0) === -1) {
+                    setRowsCleared(prev => prev + 1);
+                    ack.unshift(new Array(newStage[0].length).fill([0, 'clear']));
+                    return ack;
+                }
+                ack.push(row);
+                return ack;
+            })
     }
 
     updateStage()
@@ -129,6 +172,7 @@ class Game{
         //         return ack;
         //     }, [])
 
+        this.setMiniStage(this.tetrominoSeed[this.i + 1])
         // First flush the stage
         const newStage = this.stage.map(row =>
             row.map(cell => (cell[1] === 'clear' ? [0, 'clear'] : cell)),
@@ -146,8 +190,9 @@ class Game{
         });
         // Then check if we collided
         if (this.player.collided) {
-            console.log('gonna reset updateStage')
+            console.log(this.playerName + 'has collided, reset player and sweep rows')
             this.resetPlayer();
+            // this.stage = this.sweepRows(newStage);
             // setStage(sweepRows(newStage));
         }
         this.stage = newStage;

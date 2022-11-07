@@ -8,18 +8,24 @@ const PlayArea = (me) => {
 
     const [games, setGames] = useState([]);
     const [once, setOnce] = useState(false);
+    const [start, setStart] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
 
         socket.on('gamesInRoom', (data) => {
-            console.log('gamesInRoom event received', data);
+            // console.log('gamesInRoom event received', data);
             setGames(data);
         })
 
         socket.on('playerMoved', (data) => {
-            console.log('playerMoved event received', data);
+            // console.log('playerMoved event received', data);
             setGames(data);
+        })
+
+        socket.on('gameStart', (data) => {
+            console.log("gameStart event received");
+            setStart(true);
         })
 
         if (once === false) {
@@ -30,21 +36,17 @@ const PlayArea = (me) => {
 
         return () => {
             socket.off('gamesInRoom');
-            socket.off('getGames');
             socket.off('playerMoved');
+            socket.off('gameStart');
+
         };
     }, [games, location.state.roomId, once])
 
-    // const move = (event) =>
-    // {
-    //     // socket.emit("playerMove", { keyCode: event.keyCode, roomId: location.state.roomId });
-    // }
-
     return(
         <>
-            <Box /*tabIndex="0" onKeyDown={e => move(e)}*/ id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, backgroundColor: "#fb44" }}>
+            <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, backgroundColor: "#fb44" }}>
                 {games.map((item, index) => (
-                    <Tetris key={item.playerName + index} name={item.playerName} game={item} me={me}/>
+                    <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me}/>
                 ))}
             </Box>
         </>
