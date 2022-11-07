@@ -194,7 +194,7 @@ io.on('connection', (socket) => {
 			// console.log('--')
 			const room = rooms.get(data.roomId);
 			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
-			gameToUpdate.updateStage(data.player, data.stage);
+			gameToUpdate.updateStage();
 			gameToUpdate.updateKey(data.keyCode);
 			// console.log('-send-')
 			// console.log(gameToUpdate.stage);

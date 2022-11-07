@@ -89,7 +89,7 @@ class Game{
         this.player.collided = collided;
         this.player.pos.x += x;
         this.player.pos.y += y;
-        this.updateStage(this.player, this.stage);
+        this.updateStage();
     }
 
     drop()
@@ -114,9 +114,8 @@ class Game{
         }
     }
 
-    updateStage(player, stage)
+    updateStage()
     {
-        this.player = player;
         // this.stage = stage;
 
         // const sweepRows = newStage =>
@@ -135,18 +134,18 @@ class Game{
             row.map(cell => (cell[1] === 'clear' ? [0, 'clear'] : cell)),
         );
         // Then draw the tetromino
-        player.tetromino.forEach((row, y) => {
+        this.player.tetromino.forEach((row, y) => {
             row.forEach((value, x) => {
                 if (value !== 0) {
-                    newStage[y + player.pos.y][x + player.pos.x] = [
+                    newStage[y + this.player.pos.y][x + this.player.pos.x] = [
                         value,
-                        `${player.collided ? 'merged' : 'clear'}`,
+                        `${this.player.collided ? 'merged' : 'clear'}`,
                     ];
                 }
             });
         });
         // Then check if we collided
-        if (player.collided) {
+        if (this.player.collided) {
             console.log('gonna reset updateStage')
             this.resetPlayer();
             // setStage(sweepRows(newStage));
@@ -212,7 +211,7 @@ class Game{
             }
         }
         this.player = clonedPlayer;
-        this.updateStage(this.player, this.stage);
+        this.updateStage();
      }
 
     move(keyCode)
