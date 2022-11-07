@@ -88,36 +88,28 @@ const Tetris = ({name, game, me}) => {
                 return ack;
             }, [])
 
-        const updateStage = prevStage => {
-            // First flush the stage
-            const newStage = prevStage.map(row =>
-                row.map(cell => (cell[1] === 'clear' ? [0, 'clear'] : cell)),
-            );
-
-            // Then draw the tetromino
-            player.tetromino.forEach((row, y) => {
-                row.forEach((value, x) => {
-                    if (value !== 0) {
-                        newStage[y + player.pos.y][x + player.pos.x] = [
-                            value,
-                            `${player.collided ? 'merged' : 'clear'}`,
-                        ];
-                    }
-                });
+        // First flush the stage
+        const newStage = stage.map(row =>
+            row.map(cell => (cell[1] === 'clear' ? [0, 'clear'] : cell)),
+        );
+        // Then draw the tetromino
+        player.tetromino.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) {
+                    newStage[y + player.pos.y][x + player.pos.x] = [
+                        value,
+                        `${player.collided ? 'merged' : 'clear'}`,
+                    ];
+                }
             });
-            // Then check if we collided
-            if (player.collided) {
-                console.log('gonna reset')
-                resetPlayer();
-                return sweepRows(newStage);
-            }
-            return newStage;
-        };
-
-        // console.log('before send:', stage)
-        // socket.emit("playerUpdate", { keyCode: 'a', roomId: location.state.roomId, stage: stage });
-        setStage(prev => updateStage(prev));
-        console.log('update stage state')
+        });
+        // Then check if we collided
+        if (player.collided) {
+            console.log('gonna reset')
+            resetPlayer();
+            setStage(sweepRows(newStage));
+        }
+        setStage(newStage);
     }, [player, resetPlayer]);
 
     ////USEGAME
@@ -170,24 +162,24 @@ const Tetris = ({name, game, me}) => {
     };
 
     const drop = () => {
-        // // Increase level when player has cleared 10 rows
-        // if (rows > (level + 1) * 10) {
-        //     setLevel(prev => prev + 1);
-        //     // Also increase speed
-        //     setDropTime(1000 / (level + 1) + 200);
-        // }
+        // Increase level when player has cleared 10 rows
+        if (rows > (level + 1) * 10) {
+            setLevel(prev => prev + 1);
+            // Also increase speed
+            setDropTime(1000 / (level + 1) + 200);
+        }
 
-        // if (!checkCollision(player, stage, { x: 0, y: 1 })) {
-        //     updatePlayerPos({ x: 0, y: 1, collided: false });
-        // } else {
-        //     // Game over!
-        //     if (player.pos.y < 1) {
-        //         console.log('GAME OVER!!!');
-        //         setGameOver(true);
-        //         setDropTime(null);
-        //     }
-        //     updatePlayerPos({ x: 0, y: 0, collided: true });
-        // }
+        if (!checkCollision(player, stage, { x: 0, y: 1 })) {
+            updatePlayerPos({ x: 0, y: 1, collided: false });
+        } else {
+            // Game over!
+            if (player.pos.y < 1) {
+                console.log('GAME OVER!!!');
+                setGameOver(true);
+                setDropTime(null);
+            }
+            updatePlayerPos({ x: 0, y: 0, collided: true });
+        }
     };
 
     const dropPlayer = () => {
@@ -222,15 +214,6 @@ const Tetris = ({name, game, me}) => {
             socket.emit("playerUpdate", { keyCode: keyCode, roomId: location.state.roomId, stage:stage });
         }
     };
-
-    // useEffect(() => {
-    //     console.log('stage has changed')
-    //     console.log('stage of '+ game.playerName, stage[0]);
-    //     // console.log(player.tetromino);
-    //     // setStage(game.stage);
-    //     return () => {
-    //     };
-    // }, [stage])
 
     useEffect(() => {
         socket.on('gameStart', (data) => {
