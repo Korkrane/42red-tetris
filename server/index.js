@@ -142,6 +142,12 @@ io.on('connection', (socket) => {
 				//block joinable room
 				room.hasStarted = true;
 				console.log(room);
+				const games = room.games;
+				console.log('--foreach--')
+				games.forEach(game => {
+					game.setStage();
+				})
+				console.log('--end of foreach--')
 				io.in(data.roomId).emit("gameStart");
 			}
 
@@ -161,21 +167,34 @@ io.on('connection', (socket) => {
 			socket.emit("getIndividualGame", game);
 		});
 
-		// socket.on('playerMove', (data) => {
-		// 	const room = rooms.get(data.roomId);
-		// 	const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
-		// 	gameToUpdate.updateKey(data.keyCode);
-		// 	const games = room.games;
-		// 	io.in(data.roomId).emit("playerMoved", games);
-		// });
+	socket.on('rawDrop', (data) => {
+		console.log('receive rawdrop');
+		const room = rooms.get(data.roomId);
+		const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
+		gameToUpdate.drop();
+		// console.log('-send-')
+		// console.log(gameToUpdate.stage);
+		// console.log('--')
+		const games = room.games;
+		io.in(data.roomId).emit("playerMoved", games);
+	});
+
+	socket.on('move', (data) => {
+		console.log('receive move', data);
+		const room = rooms.get(data.roomId);
+		const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
+		gameToUpdate.move(data.keyCode);
+		const games = room.games;
+		io.in(data.roomId).emit("playerMoved", games);
+	});
 
 		socket.on('playerUpdate', (data) => {
 			// console.log('-receive-')
-			// console.log(data.stage);
+			// console.log(data.stage[0]);
 			// console.log('--')
 			const room = rooms.get(data.roomId);
 			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
-			gameToUpdate.updatePlayer(data.player, data.stage);
+			gameToUpdate.updateStage(data.player, data.stage);
 			gameToUpdate.updateKey(data.keyCode);
 			// console.log('-send-')
 			// console.log(gameToUpdate.stage);

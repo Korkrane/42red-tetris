@@ -75,42 +75,9 @@ const Tetris = ({name, game, me}) => {
     const [rowsCleared, setRowsCleared] = useState(0);
 
     useEffect(() => {
-        setRowsCleared(0);
-
-        const sweepRows = newStage =>
-            newStage.reduce((ack, row) => {
-                if (row.findIndex(cell => cell[0] === 0) === -1) {
-                    setRowsCleared(prev => prev + 1);
-                    ack.unshift(new Array(newStage[0].length).fill([0, 'clear']));
-                    return ack;
-                }
-                ack.push(row);
-                return ack;
-            }, [])
-
-        // First flush the stage
-        const newStage = stage.map(row =>
-            row.map(cell => (cell[1] === 'clear' ? [0, 'clear'] : cell)),
-        );
-        // Then draw the tetromino
-        player.tetromino.forEach((row, y) => {
-            row.forEach((value, x) => {
-                if (value !== 0) {
-                    newStage[y + player.pos.y][x + player.pos.x] = [
-                        value,
-                        `${player.collided ? 'merged' : 'clear'}`,
-                    ];
-                }
-            });
-        });
-        // Then check if we collided
-        if (player.collided) {
-            console.log('gonna reset')
-            resetPlayer();
-            setStage(sweepRows(newStage));
-        }
-        setStage(newStage);
-    }, [player, resetPlayer]);
+        console.log('emit playerupdate')
+        socket.emit("playerUpdate", { player: player, roomId: location.state.roomId, stage: stage });
+    }, [player, resetPlayer, location.state.roomId]);
 
     ////USEGAME
     // const [score, setScore, rows, setRows, level, setLevel] = useGameStatus(
@@ -162,30 +129,34 @@ const Tetris = ({name, game, me}) => {
     };
 
     const drop = () => {
-        // Increase level when player has cleared 10 rows
-        if (rows > (level + 1) * 10) {
-            setLevel(prev => prev + 1);
-            // Also increase speed
-            setDropTime(1000 / (level + 1) + 200);
-        }
+        // // Increase level when player has cleared 10 rows
+        // if (rows > (level + 1) * 10) {
+        //     setLevel(prev => prev + 1);
+        //     // Also increase speed
+        //     setDropTime(1000 / (level + 1) + 200);
+        // }
 
-        if (!checkCollision(player, stage, { x: 0, y: 1 })) {
-            updatePlayerPos({ x: 0, y: 1, collided: false });
-        } else {
-            // Game over!
-            if (player.pos.y < 1) {
-                console.log('GAME OVER!!!');
-                setGameOver(true);
-                setDropTime(null);
-            }
-            updatePlayerPos({ x: 0, y: 0, collided: true });
-        }
+        // if (!checkCollision(player, stage, { x: 0, y: 1 })) {
+        //     updatePlayerPos({ x: 0, y: 1, collided: false });
+        // } else {
+        //     // Game over!
+        //     if (player.pos.y < 1) {
+        //         console.log('GAME OVER!!!');
+        //         setGameOver(true);
+        //         setDropTime(null);
+        //     }
+        //     updatePlayerPos({ x: 0, y: 0, collided: true });
+        // }
+
+
+        console.log("emit rawdrop");
+        socket.emit("rawDrop", {roomId: location.state.roomId});
     };
 
     const dropPlayer = () => {
         // We don't need to run the interval when we use the arrow down to
         // move the tetromino downwards. So deactivate it for now.
-        setDropTime(null);
+        // setDropTime(null);
         drop();
     };
 
@@ -199,19 +170,18 @@ const Tetris = ({name, game, me}) => {
         console.log(name);
         if (Object.values(me)[0] === name)
         {
-            if (!gameOver) {
-                if (keyCode === 37) {
-                    movePlayer(-1);
-                } else if (keyCode === 39) {
-                    movePlayer(1);
-                } else if (keyCode === 40) {
-                    dropPlayer();
-                } else if (keyCode === 38) {
-                    playerRotate(stage, 1);
-                }
-            }
-            console.log('before send:', stage)
-            socket.emit("playerUpdate", { keyCode: keyCode, roomId: location.state.roomId, stage:stage });
+            socket.emit("move", {keyCode:keyCode, roomId: location.state.roomId});
+            // if (!gameOver) {
+            //     if (keyCode === 37) {
+            //         movePlayer(-1);
+            //     } else if (keyCode === 39) {
+            //         movePlayer(1);
+            //     } else if (keyCode === 40) {
+            //         dropPlayer();
+            //     } else if (keyCode === 38) {
+            //         playerRotate(stage, 1);
+            //     }
+            // }
         }
     };
 
@@ -226,8 +196,7 @@ const Tetris = ({name, game, me}) => {
         };
     }, [startGame])
 
-    console.log('game', game);
-    console.log('render'); console.log('stage of ' + game.playerName, stage[0]);
+    // console.log('render'); console.log('game.stage of ' + game.playerName, game.stage[0]);
     return (
         <Box
             id="indivTetris"
@@ -237,21 +206,21 @@ const Tetris = ({name, game, me}) => {
             /*onKeyUp={keyUp}*/
             sx={{ border: 1, borderRadius: 5, flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}
         >
-            <TetrisGrid stage={stage} />
+            <TetrisGrid stage={game.stage} />
             <Box sx={{
                 width: '100%',
                 maxWidth: '200px',
                 display: 'block',
                 padding: '0 20px'
             }}>
-                {gameOver ? (
-                    <Display gameOver={gameOver} text="Game Over" />
+                {game.gameOver ? (
+                    <Display gameOver={game.gameOver} text="Game Over" />
                 ) : (
                     <div>
-                        <Display text={`Player: ${name}`} />
-                        <Display text={`Score: ${score}`} />
-                        <Display text={`rows: ${rows}`} />
-                        <Display text={`Level: ${level}`} />
+                        <Display text={`Player: ${game.name}`} />
+                        <Display text={`Score: ${game.score}`} />
+                        <Display text={`rows: ${game.rows}`} />
+                        <Display text={`Level: ${game.level}`} />
                         <Display text={`Key: ${game.keyCode}`} />
                     </div>
                 )}
