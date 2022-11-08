@@ -19,6 +19,10 @@ const Tetris = ({start, name, game, me}) => {
         }
     }, [start])
 
+    useEffect(() => {
+        setDropTime(1000 / (game.level + 1) + 200);
+    }, [game.level])
+
     const drop = () => {
         if (start === true)
         {

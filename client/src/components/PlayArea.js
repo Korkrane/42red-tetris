@@ -19,7 +19,7 @@ const PlayArea = (me) => {
         })
 
         socket.on('playerMoved', (data) => {
-            // console.log('playerMoved event received', data);
+            console.log('playerMoved event received', data);
             setGames(data);
         })
 
