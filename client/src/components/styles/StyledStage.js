@@ -12,5 +12,5 @@ export const StyledStage = styled.div`
   width: 100%;
   max-width: 25vw;
   min-width:200px;
-  background: #111;
+  background: #333;
 `;

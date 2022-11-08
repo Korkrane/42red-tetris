@@ -7,7 +7,7 @@ class Game{
     {
         this.keyCode = null;
         this.playerName = name;
-        this.stage = this.createStage();
+        this.stage = this.createStage(20, 12);
         this.gameOver = false;
         this.score = 0;
         this.rows = 0;
@@ -16,13 +16,10 @@ class Game{
         this.tetromino = this.tetrominoSeed[0];
         this.i = 0;
         this.player = this.initPlayer();
-        this.miniStage = this.lol()
+        this.miniStage = this.createStage(4, 4);
         this.nextTetromino = null;
     }
 
-    lol() {
-        return Array.from(Array(4), () => new Array(4).fill([0, 'clear']),);
-    }
 
     setMiniStage(nextTetromino) {
         this.nextTetromino = nextTetromino;
@@ -181,9 +178,9 @@ class Game{
         return { x: 12 / 2 - 2, y: 0 };
     }
 
-    createStage()
+    createStage(y, x)
     {
-        return Array.from(Array(20), () => new Array(12).fill([0, 'clear']),);
+        return Array.from(Array(y), () => new Array(x).fill([0, 'clear']),);
     }
 
     updateKey(key)

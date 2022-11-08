@@ -14,17 +14,14 @@ const PlayArea = (me) => {
     useEffect(() => {
 
         socket.on('gamesInRoom', (data) => {
-            // console.log('gamesInRoom event received', data);
             setGames(data);
         })
 
         socket.on('playerMoved', (data) => {
-            console.log('playerMoved event received', data);
             setGames(data);
         })
 
         socket.on('gameStart', (data) => {
-            console.log("gameStart event received");
             setStart(true);
         })
 

@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useInterval } from '../hooks/useInterval';
-import TetrisGrid from './Stage';
-import MiniTetrisGrid from './MiniStage';
-import Display from './Display';
-import { socket } from './Menu'
 import { Box } from '@mui/system';
+
+import MiniTetrisGrid from './MiniStage';
+import TetrisGrid from './Stage';
+import Display from './Display';
+import { socket } from './Menu';
+
 
 const Tetris = ({start, name, game, me}) => {
     const location = useLocation();
@@ -20,7 +22,7 @@ const Tetris = ({start, name, game, me}) => {
     }, [start])
 
     useEffect(() => {
-        setDropTime(1000 / (game.level + 1) + 200);
+        setDropTime(1000 / (game.level + 1) + 400);
     }, [game.level])
 
     const drop = () => {
@@ -47,7 +49,6 @@ const Tetris = ({start, name, game, me}) => {
             role="button"
             tabIndex="0"
             onKeyDown={e => move(e)}
-            /*onKeyUp={keyUp}*/
             sx={{ border: 1, borderRadius: 5, flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}
         >
             {game.gameOver ? null : (<TetrisGrid stage={game.stage} />)}
@@ -55,7 +56,7 @@ const Tetris = ({start, name, game, me}) => {
                 width: '100%',
                 maxWidth: '200px',
                 display: 'block',
-                padding: '0 20px'
+                padding: '0 20px',
             }}>
                 {game.gameOver ? (
                     <Display gameOver={game.gameOver} text="Game Over" />
