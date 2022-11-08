@@ -41,7 +41,7 @@ const PlayArea = (me) => {
 
     return(
         <>
-            <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, backgroundColor: "#fb44" }}>
+            <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, /*backgroundColor: "#fb44"*/ }}>
                 {games.map((item, index) => (
                     <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me}/>
                 ))}

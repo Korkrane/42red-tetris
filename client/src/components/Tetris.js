@@ -46,12 +46,21 @@ const Tetris = ({start, name, game, me}) => {
     return (
         <Box
             id="indivTetris"
-            role="button"
+            // role="button"
             tabIndex="0"
             onKeyDown={e => move(e)}
-            sx={{ border: 1, borderRadius: 5, flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}
+            sx={{ outline:'none', flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}
         >
-            {game.gameOver ? null : (<TetrisGrid stage={game.stage} />)}
+            {game.gameOver ? (
+                <div>
+                    <Display text={`Player: ${game.playerName}`} />
+                    <Display text={`Score: ${game.score}`} />
+                    <Display text={`rows: ${game.rows}`} />
+                    <Display text={`Level: ${game.level}`} />
+                </div>)
+                :
+                (<TetrisGrid stage={game.stage} />)
+            }
             <Box sx={{
                 width: '100%',
                 maxWidth: '200px',
@@ -59,14 +68,13 @@ const Tetris = ({start, name, game, me}) => {
                 padding: '0 20px',
             }}>
                 {game.gameOver ? (
-                    <Display gameOver={game.gameOver} text="Game Over" />
+                   null
                 ) : (
                     <div>
                         <Display text={`Player: ${game.playerName}`} />
                         <Display text={`Score: ${game.score}`} />
                         <Display text={`rows: ${game.rows}`} />
                         <Display text={`Level: ${game.level}`} />
-                        <Display text={`Key: ${game.keyCode}`} />
                         <MiniTetrisGrid stage={game.miniStage} />
                     </div>
 

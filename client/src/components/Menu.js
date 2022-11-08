@@ -1,5 +1,6 @@
 import socketIO from 'socket.io-client';
-import { JoinButton, SoloButton } from './Button';
+import MButton from './Button';
+import { Title } from './Button';
 import { useEffect, useState } from 'react';
 import * as React from 'react';
 import { useNavigate} from 'react-router-dom';
@@ -11,6 +12,11 @@ import { TextField } from '@mui/material';
 import TagIcon from '@mui/icons-material/Tag';
 import InputAdornment from '@mui/material/InputAdornment';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { color } from '@mui/system';
+import { useMediaQuery } from 'react-responsive'
+import { palette } from '@mui/system';
+import { grey } from '@mui/material/colors';
+
 
 export const socket = socketIO.connect('http://localhost:4000');
 
@@ -44,10 +50,9 @@ const Menu = () => {
             navigate("/" + hash, {state:{roomId: data.id, userName:nameInput}});
         });
 
-        socket.on('cantJoin', () => {
-            console.log('cant join room game is going on');
+        socket.on('cantJoin', (data) => {
             setJoinable(false);
-            setErrorMessage(' - game has started');
+            setErrorMessage(data);
         });
 
         // socket.on('roomChecked', (...args) => {
@@ -98,28 +103,37 @@ const Menu = () => {
         setRoomIdInput(e.target.value);
     };
 
-    const checkRooms = () => {
-        socket.emit('checkRooms');
-    }
+    const isDesktopOrLaptop = useMediaQuery({ minWidth: 1224 })
+    const isBigScreen = useMediaQuery({ minWidth: 1824 })
+    const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 })
+    const isPortrait = useMediaQuery({ orientation: 'portrait' })
+    const isRetina = useMediaQuery({ minResolution: '2dppx' })
 
     return(
         <>
+
             <div className='Menu'>
-                <SoloButton onClick={handleOpenSolo}>Solo</SoloButton>
+
+                <Title isTabletOrMobile={isTabletOrMobile}>RED-TETRIS</Title>
+                <MButton isTabletOrMobile={isTabletOrMobile}  onClick={handleOpenSolo}>Solo</MButton>
                 <Modal open={openSolo} onClose={handleCloseSolo}>
-                     <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, border: '2px solid #000', borderRadius:5, p: 4, bgcolor: 'background.paper'}}>
-                        <Typography id="modal-title-title-solo" variant="h6" component="h2">
+                     <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, border: '2px solid #000', borderRadius:5, p: 4, bgcolor: grey[900]}}>
+                        <Typography id="modal-title-title-solo" variant="h6" component="h2" color={grey[50]}>
                             Game Settings
                         </Typography>
-                        <TextField sx={{ m: 2 }}
+                        <TextField sx={{ m: 2, color: grey[900] }}
                             id="input-with-icon-textfield-solo"
                             label="Your player name"
+                            InputLabelProps={{
+                                style: { color: grey[50] },
+                            }}
                             InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                < AccountCircleIcon />
+                                <AccountCircleIcon sx={{color:grey[50]}}/>
                                 </InputAdornment>
                             ),
+                            style: { color: grey[50] },
                             }}
                             variant="standard"
                             onChange= {handleNameInputChange}
@@ -127,7 +141,7 @@ const Menu = () => {
                         <Button sx={{bottom:45, marginLeft:10, position: "absolute"}} variant="contained"  disabled={nameInput === '' ? true : false} onClick={createRoom}>Join</Button>
                     </Box>
                 </Modal>
-                <JoinButton onClick={handleOpenJoin}>Join</JoinButton>
+                <MButton isTabletOrMobile={isTabletOrMobile} onClick={handleOpenJoin}>Join</MButton>
                 <Modal open={openJoin} onClose={handleCloseJoin}>
                      <Box sx={{position: 'absolute',
                             top: '50%',
@@ -138,19 +152,23 @@ const Menu = () => {
                             borderColor: joinable ? '#000' : 'error.main',
                             borderRadius:5,
                             p: 4,
-                            bgcolor: 'background.paper'}}>
-                        <Typography sx={{color: joinable ? '#000' : 'error.main'}} id="modal-modal-title" variant="h6" component="h2">
+                            bgcolor: grey[900]}}>
+                        <Typography sx={{color: joinable ? grey[50] : 'error.main'}} id="modal-modal-title" variant="h6" component="h2" >
                            Game Settings {errorMessage}
                         </Typography>
                         <TextField sx={{ m: 2 }}
                             id="input-with-icon-textfield"
                             label="Your player name"
+                            InputLabelProps={{
+                                style: { color: grey[50] },
+                            }}
                             InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                < AccountCircleIcon />
+                                        < AccountCircleIcon sx={{ color: grey[50] }} />
                                 </InputAdornment>
                             ),
+                            style: { color: grey[50] },
                             }}
                             variant="standard"
                             onChange= {handleNameInputChange}
@@ -158,12 +176,16 @@ const Menu = () => {
                         <TextField sx={{ m: 2 }}
                             id="input-with-icon-textfield"
                             label="room ID"
+                            InputLabelProps={{
+                                style: { color: grey[50] },
+                            }}
                             InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                <TagIcon />
+                                        <TagIcon sx={{ color: grey[50] }} />
                                 </InputAdornment>
                             ),
+                            style: { color: grey[50] },
                             }}
                             variant="standard"
                             onChange= {handleRoomIdInputChange}
@@ -171,7 +193,14 @@ const Menu = () => {
                         <Button sx={{bottom:45, marginLeft:10, position: "absolute"}} variant="contained"  disabled={nameInput === '' || roomIdInput === '' ? true : false} onClick={joinRoom}>Join</Button>
                     </Box>
                 </Modal>
-                <Button onClick={checkRooms}>Check Lobbies on serv (debug)</Button>
+                <div>
+                    <h1>Device Test!</h1>
+                    {isDesktopOrLaptop && <p>You are a desktop or laptop</p>}
+                    {isBigScreen && <p>You  have a huge screen</p>}
+                    {isTabletOrMobile && <p>You are a tablet or mobile phone</p>}
+                    <p>Your are in {isPortrait ? 'portrait' : 'landscape'} orientation</p>
+                    {isRetina && <p>You are retina</p>}
+                </div>
             </div>
         </>
     );

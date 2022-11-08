@@ -14,7 +14,7 @@ class Room{
 
     createTetrominoSeed()
     {
-      return Array.from({length:100}, () => tetrominos.randomTetromino())
+      return Array.from({length:50}, () => tetrominos.randomTetromino())
     }
 
     addClient(client)

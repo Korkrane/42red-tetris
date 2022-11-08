@@ -7,7 +7,7 @@ const Players = ({players}) => {
 
     return (
         <>
-            <Box sx={{ backgroundColor: "#5d5f", border: 3, borderRadius: 5 }} pb={1}>
+            <Box sx={{ /*backgroundColor: "#5d5f"*/ border: 3, borderRadius: 5 }} pb={1}>
                             <Typography variant="h5" align="center">
                                 players
                             </Typography>

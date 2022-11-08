@@ -32,7 +32,7 @@ const Room = () => {
 
     return (
         <>
-            <Box sx={{ display: 'flex', maxHeight: '100%', minHeight: '100%', minWidth: '100%', justifyContent: 'flex-start', backgroundColor: "#4b4d4c"}}>
+            <Box sx={{ display: 'flex', maxHeight: '100%', minHeight: '100%', minWidth: '100%', justifyContent: 'flex-start', /*backgroundColor: "#4b4d4c"*/}}>
                 <PlayArea me={location.state.userName}/>
                     <RoomDetails players={players}/>
             </Box>

@@ -52,7 +52,7 @@ const RoomDetails = ({players}) => {
 
 	return (
 		<>
-			<Box m={2} sx={{ maxHeight: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "#fb44" }}>
+            <Box m={2} sx={{ maxHeight: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "rgba(74, 77, 79)" }}>
 				<Players players={players}/>
 				<Chat messages={messages} sendMessage={sendMessage} setMessage={setMessage} message={message} />
 				<RoomButton leaveRoom={leaveRoom} setPlayerReady={setPlayerReady} flag={flag}/>

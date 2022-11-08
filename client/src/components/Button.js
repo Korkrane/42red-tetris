@@ -1,40 +1,51 @@
 
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 
-const Button = styled.button`
+const MButton = styled.button`
   display:flexbox;
   justify-content:center;
   box-sizing: border-box;
-  min-height: 100px;
+
+
+
+  min-height:${props => (props.isTabletOrMobile === true ? '50px' : '100px')};
   width: 30%;
+
   border-radius: 20px;
   border: none;
-  color: white;
-  background: #333;
-  font-family: Pixel, Arial, Helvetica, sans-serif;
-  font-size: 2rem;
   outline: none;
-  cursor: pointer;
+  cursor: auto;
+
+
+  font-family: "Title";
+  -webkit-text-stroke: 2px rgb(100,0,0);
+  text-shadow: blue 2px 5px;
+  font-size:${props => (props.isTabletOrMobile === true ? 'calc(25px + 0.5vw)' : 'calc(40px + 1vw)')};
+  color:red;
+
+  border: 4px solid;
+  border-color: red;
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  box-shadow: 5px 8px 2px 1px blue;
+  :hover{
+    border-color: tomato;
+    color:tomato;
+    text-shadow: rgb(0, 76, 255) 2px 5px;
+    box-shadow: 5px 8px 2px 1px rgb(0, 76, 255);
+  }
+
 `;
 
-export const JoinButton = styled(Button)`
-  background: blue;
+export const Title = styled.div`
+  font-family: "Title";
+  -webkit-text-stroke: 2px rgb(100,0,0);
+  text-shadow: blue 2px 5px;
+  color:rgb(255, 0, 0);
+  border-color: red;
+  font-size:${props => (props.isTabletOrMobile === true ? 'calc(50px + 0.5vw)' : 'calc(100px + 1vw)')};
 `;
 
-export const CheckButton = styled(Button)`
-  background: orange;
-`;
 
-export const LeaveButton = styled(Button)`
-  background: red;
-`;
 
-export const SoloButton = styled(Button)`
-  background: red;
-`;
-
-export const MultiButton = styled(Button)`
-  background: orange;
-`;
-
-export default Button;
+export default MButton;

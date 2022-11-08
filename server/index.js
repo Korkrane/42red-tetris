@@ -56,23 +56,22 @@ io.on('connection', (socket) => {
 			}
 			else
 			{
-				if(room.hasStarted === true)
-				{
-					console.log('couldnt join the room');
-					socket.emit("cantJoin");
+				const game = room.games.find(({ playerName }) => playerName === client.name)
+				if(room.hasStarted === true){
+					socket.emit("cantJoin", '- game has started');
+					return;
+				}
+				else if(game){
+					socket.emit("cantJoin", '- duplicate playername');
 					return;
 				}
 				room.addClient(client);
 				socket.emit('navToRoom',{id: data.id})
 				socket.join(data.id);
 				const playersInRoom = [...room.clients].map(x => ({name: x.name, status:x.readyToPlay}));
-				// console.log(PlayersNameInRoom + ' are in ' + data.id);
-				console.log(playersInRoom);
 				io.in(data.id).emit("playersInRoom", playersInRoom);
-				console.log('B');
 			}
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m has joined the room \x1b[36m\x1b[32m${data.id}\x1b[0m`);
-
 		});
 
 		socket.on('leaveRoom', (data) => {

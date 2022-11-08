@@ -8,17 +8,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  background: url('./tetris-multicolored-pattern-4u7ed6koskqhcez1.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100%;
+    /* overflow: hidden; */
+}
+
+@font-face {
+  font-family: "Title";
+  src: local("Play Pretend"), url("./fonts/Play\ Pretend.otf") format("truetype");
+}
+
 #root {
-  height: 100vh;
+  height: 100%;
+  /* background-image: url('./tetris-multicolored-pattern-4u7ed6koskqhcez1.jpeg');
+  background-size: cover; */
 }
 
 .Menu {
-  /* background-image:url('https://www.pixelstalk.net/wp-content/uploads/images1/Game-Tetris-Backgrounds.jpg'); */
+  /* background-image:url('./tetris-multicolored-pattern-4u7ed6koskqhcez1.jpeg'); */
   display: flex;
   flex-flow: column;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap:20px;
-  height:100vh;
+  height:100%;
 }
