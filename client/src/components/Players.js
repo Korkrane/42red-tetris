@@ -2,20 +2,21 @@ import { Box } from '@mui/system';
 import { Typography} from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { grey } from '@mui/material/colors';
 
 const Players = ({players}) => {
 
     return (
         <>
-            <Box sx={{ /*backgroundColor: "#5d5f"*/ border: 3, borderRadius: 5 }} pb={1}>
-                            <Typography variant="h5" align="center">
+            <Box sx={{ border: 2, borderRadius:5, borderColor:grey[700] }} pb={1}>
+                        <Typography variant="h5" align="center" color={grey[700]}>
                                 players
                             </Typography>
                             {
                                 <Box>
                                     {players.map((item, index) => (
                                         <Box key={item.name + index} display='flex'>
-                                            <Box sx={{ flexGrow: 1 }} ml={2}>{item.name}</Box>
+                                            <Box sx={{ flexGrow: 1, color:grey[700] }} ml={2}>{item.name}</Box>
                                             <Box mr={2}>{item.status ? <CheckCircleIcon color="success" fontSize="small"/> : <CancelIcon color="error" fontSize="small" />}</Box>
                                         </Box>
 

@@ -5,12 +5,22 @@ import { socket } from './Menu'
 import Players from './Players';
 import Chat from './Chat';
 import RoomButton from './RoomButton';
+import Button from '@mui/material/Button';
+// import { IconButton } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import { grey } from '@mui/material/colors';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import './RoomDetails.css';
+import { AiFillPlusCircle } from 'react-icons/ai';
+import { IconContext } from "react-icons";
 
 const RoomDetails = ({players}) => {
 
 	const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
     const [flag, setFlag] = useState(true);
+    const [hide, setHide] = useState(true);
 
 	const location = useLocation();
     const navigate = useNavigate();
@@ -32,7 +42,11 @@ const RoomDetails = ({players}) => {
 		  socket.emit('readyToPlay', { roomId: location.state.roomId });
 	  };
 
-	  useEffect(() => {
+    const hideDetails = () => {
+        setHide(!hide);
+    };
+
+	useEffect(() => {
         window.onpopstate = () => {
             socket.emit("leaveRoom", {roomId:location.state.roomId});
             navigate('/');
@@ -49,10 +63,12 @@ const RoomDetails = ({players}) => {
         };
     }, [location.state.roomId, navigate, players])
 
-
 	return (
 		<>
-            <Box m={2} sx={{ maxHeight: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "rgba(74, 77, 79)" }}>
+            <Box m={2} sx={{position:'absolute', bottom:0, right:0}}>
+                <button class="glow-on-hover" onClick={hideDetails}>{hide === true ? '+' : '-'}</button>
+            </Box>
+            <Box id="details" m={2} sx={{ maxHeight: '100%', display:(hide === true) ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', maxWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "rgba(20,20,20, 1)" }}>
 				<Players players={players}/>
 				<Chat messages={messages} sendMessage={sendMessage} setMessage={setMessage} message={message} />
 				<RoomButton leaveRoom={leaveRoom} setPlayerReady={setPlayerReady} flag={flag}/>

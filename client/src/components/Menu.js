@@ -8,7 +8,7 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { TextField } from '@mui/material';
+import { autocompleteClasses, TextField } from '@mui/material';
 import TagIcon from '@mui/icons-material/Tag';
 import InputAdornment from '@mui/material/InputAdornment';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -16,7 +16,6 @@ import { color } from '@mui/system';
 import { useMediaQuery } from 'react-responsive'
 import { palette } from '@mui/system';
 import { grey } from '@mui/material/colors';
-
 
 export const socket = socketIO.connect('http://localhost:4000');
 
@@ -103,9 +102,9 @@ const Menu = () => {
         setRoomIdInput(e.target.value);
     };
 
-    const isDesktopOrLaptop = useMediaQuery({ minWidth: 1224 })
+    const isDesktopOrLaptop = useMediaQuery({ minWidth: 1024 })
     const isBigScreen = useMediaQuery({ minWidth: 1824 })
-    const isTabletOrMobile = useMediaQuery({ maxWidth: 1224 })
+    const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 })
     const isPortrait = useMediaQuery({ orientation: 'portrait' })
     const isRetina = useMediaQuery({ minResolution: '2dppx' })
 
@@ -117,11 +116,20 @@ const Menu = () => {
                 <Title isTabletOrMobile={isTabletOrMobile}>RED-TETRIS</Title>
                 <MButton isTabletOrMobile={isTabletOrMobile}  onClick={handleOpenSolo}>Solo</MButton>
                 <Modal open={openSolo} onClose={handleCloseSolo}>
-                     <Box sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, border: '2px solid #000', borderRadius:5, p: 4, bgcolor: grey[900]}}>
+                     <Box sx={{position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: isTabletOrMobile === true ? 200 : 400,
+                        height: isTabletOrMobile === true ? 120 : 'auto',
+                        border: '2px solid #000',
+                        borderRadius:5,
+                        p: 4,
+                        bgcolor: grey[900]}}>
                         <Typography id="modal-title-title-solo" variant="h6" component="h2" color={grey[50]}>
                             Game Settings
                         </Typography>
-                        <TextField sx={{ m: 2, color: grey[900] }}
+                        <TextField sx={{ m: 2}}
                             id="input-with-icon-textfield-solo"
                             label="Your player name"
                             InputLabelProps={{
@@ -138,7 +146,12 @@ const Menu = () => {
                             variant="standard"
                             onChange= {handleNameInputChange}
                         />
-                        <Button sx={{bottom:45, marginLeft:10, position: "absolute"}} variant="contained"  disabled={nameInput === '' ? true : false} onClick={createRoom}>Join</Button>
+                        <Button sx={{
+                            bottom:45,
+                            marginLeft: isTabletOrMobile === true ? -16 : 10,
+                            marginBottom: isTabletOrMobile === true ? -5 : 0,
+                            position: "absolute"}}
+                            variant="contained"  disabled={nameInput === '' ? true : false} onClick={createRoom}>Join</Button>
                     </Box>
                 </Modal>
                 <MButton isTabletOrMobile={isTabletOrMobile} onClick={handleOpenJoin}>Join</MButton>
@@ -147,7 +160,8 @@ const Menu = () => {
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            width: 400,
+                            width: isTabletOrMobile === true ? 200 : 400,
+                            height: isTabletOrMobile === true ? 200 : 'auto',
                             border: '2px solid',
                             borderColor: joinable ? '#000' : 'error.main',
                             borderRadius:5,
@@ -190,11 +204,15 @@ const Menu = () => {
                             variant="standard"
                             onChange= {handleRoomIdInputChange}
                         />
-                        <Button sx={{bottom:45, marginLeft:10, position: "absolute"}} variant="contained"  disabled={nameInput === '' || roomIdInput === '' ? true : false} onClick={joinRoom}>Join</Button>
+                        <Button sx={{
+                            bottom:45,
+                            marginLeft: isTabletOrMobile === true ? -16 : 10,
+                            marginBottom: isTabletOrMobile === true ? -5 : 0,
+                            position: "absolute"}}
+                            variant="contained"  disabled={nameInput === '' || roomIdInput === '' ? true : false} onClick={joinRoom}>Join</Button>
                     </Box>
                 </Modal>
-                <div>
-                    <h1>Device Test!</h1>
+                <div id="screen">
                     {isDesktopOrLaptop && <p>You are a desktop or laptop</p>}
                     {isBigScreen && <p>You  have a huge screen</p>}
                     {isTabletOrMobile && <p>You are a tablet or mobile phone</p>}

@@ -9,7 +9,7 @@ body {
 }
 
 html {
-  background: url('./tetris-multicolored-pattern-4u7ed6koskqhcez1.jpeg') no-repeat center center fixed;
+  background: url('./bau_fond.png') no-repeat center center fixed;
     background-size: cover;
     height: 100%;
     /* overflow: hidden; */
@@ -35,4 +35,8 @@ html {
   align-items: center;
   gap:20px;
   height:100%;
+}
+
+#screen {
+  color: white;
 }
