@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const RoomButton = ({leaveLobby, setPlayerReady, flag}) => {
+const RoomButton = ({leaveRoom, setPlayerReady, flag}) => {
 
     const classes = useStyles();
     const isDesktopOrLaptop = useMediaQuery({ minWidth: 1024 })
@@ -24,7 +24,7 @@ const RoomButton = ({leaveLobby, setPlayerReady, flag}) => {
     return (
         <>
             <Box sx={{ display: "flex", justifyContent: 'space-evenly' }}>
-                <Button classes={{ startIcon: (isTabletOrMobile === true) ? classes.startICon : null }} variant="contained" startIcon={<LogoutIcon />} onClick={leaveLobby}>{isTabletOrMobile === true ? null: 'Leave'}</Button>
+                <Button classes={{ startIcon: (isTabletOrMobile === true) ? classes.startICon : null }} variant="contained" startIcon={<LogoutIcon />} onClick={leaveRoom}>{isTabletOrMobile === true ? null: 'Leave'}</Button>
                 <Button classes={{ startIcon: (isTabletOrMobile === true) ? classes.startICon : null }} variant="contained" startIcon={flag ? <CancelIcon /> : <CheckCircleIcon />} onClick={setPlayerReady} color={flag ? "error" : "success"}>
                     {isTabletOrMobile === true ? null : 'Ready'}
                 </Button>

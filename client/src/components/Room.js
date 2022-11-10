@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import { socket } from './Menu'
 import { Box } from '@mui/system';
 import PlayArea from './PlayArea';
@@ -11,6 +11,28 @@ const Room = () => {
     const [players, setPlayers] = useState([]);
     const location = useLocation();
     const [once, setOnce] = useState(false);
+    const navigate = useNavigate();
+
+    const leaveRoom = () => {
+        console.log('you leave room ' + location.state.roomId);
+        socket.emit("leaveRoom", { roomId: location.state.roomId });
+        navigate('/');
+    }
+
+    useEffect(() => {
+        const handleOnPop = () => {
+            console.log('receive onpop event')
+            socket.emit("leaveRoom", { roomId: location.state.roomId });
+            navigate('/');
+        }
+
+        window.addEventListener('popstate', handleOnPop);
+
+        return() => {
+             window.removeEventListener('popstate', handleOnPop)
+        }
+    }, [location.state.roomId, navigate])
+
 
     useEffect(() => {
         socket.on('playersInRoom', (data) => {
@@ -49,7 +71,7 @@ const Room = () => {
                     {isRetina && <p>You are retina</p>}
                 </div>
                 <PlayArea me={location.state.userName}/>
-                <RoomDetails players={players}/>
+                <RoomDetails players={players} leaveRoom={leaveRoom}/>
             </Box>
         </>
     );

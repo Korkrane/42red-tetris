@@ -15,7 +15,7 @@ import './RoomDetails.css';
 import { AiFillPlusCircle } from 'react-icons/ai';
 import { IconContext } from "react-icons";
 
-const RoomDetails = ({players}) => {
+const RoomDetails = ({players, leaveRoom}) => {
 
 	const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
@@ -31,11 +31,7 @@ const RoomDetails = ({players}) => {
         setMessage('');
     }
 
-    const leaveRoom = () => {
-        console.log('you leave room ' + location.state.roomId);
-        socket.emit("leaveRoom", {roomId:location.state.roomId});
-        return navigate('/');
-    }
+
 
 	const setPlayerReady = () => {
 		setFlag(!flag);
@@ -47,10 +43,6 @@ const RoomDetails = ({players}) => {
     };
 
 	useEffect(() => {
-        window.onpopstate = () => {
-            socket.emit("leaveRoom", {roomId:location.state.roomId});
-            navigate('/');
-          }
 
         socket.on("receiveMssg", (data) => {
             console.log("receiveMssg event");

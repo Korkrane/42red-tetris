@@ -16,7 +16,6 @@ import { color } from '@mui/system';
 import { useMediaQuery } from 'react-responsive'
 import { palette } from '@mui/system';
 import { grey } from '@mui/material/colors';
-
 export const socket = socketIO.connect('http://localhost:4000');
 
 
@@ -45,7 +44,7 @@ const Menu = () => {
     useEffect(() => {
 
         socket.on('navToRoom', (data) => {
-            const hash = data.id + '[' + nameInput + ']'
+            const hash = data.id + '[' + nameInput + ']';
             navigate("/" + hash, {state:{roomId: data.id, userName:nameInput}});
         });
 
