@@ -74,7 +74,7 @@ const RoomDetails = ({players, leaveRoom, soloGameMode}) => {
                     <Box m={2} sx={{position:'absolute', bottom:0, right:0}}>
                         <button class="glow-on-hover" onClick={hideDetails}>{hide === true ? '+' : '-'}</button>
                     </Box>
-                    <Box id="details" m={2} sx={{ maxHeight: '100%', display:(hide === true) ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', maxWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "rgba(20,20,20, 1)" }}>
+                    <Box id="details" m={2} sx={{maxHeight: '100%', display:(hide === true) ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', maxWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "rgba(20,20,20, 1)"}}>
                         <Players players={players}/>
                         <Chat messages={messages} sendMessage={sendMessage} setMessage={setMessage} message={message} />
                         <RoomButton leaveRoom={leaveRoom} setPlayerReady={setPlayerReady} flag={flag}/>

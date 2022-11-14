@@ -41,12 +41,11 @@ io.on('connection', (socket) => {
 			client.setName(data.name);
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m wants to join room \x1b[36m\x1b[32m${data.id}\x1b[0m`);
 			const room = rooms.get(data.id);
-			//If client join a room that doesn't exist, create it and add it to our map.
 			if(room === undefined)
 			{
-				console.log('is undefined');
-
 				const room = new Room(data.id);
+				// const game = room.games.find(({ playerName }) => playerName === client.name)
+				// game.setAdmin();
 				rooms.set(room.id, room);
 				room.addClient(client);
 				socket.join(room.id);
@@ -80,6 +79,14 @@ io.on('connection', (socket) => {
 			console.log(roomIdToLeave);
 			console.log(`${socket.id} wants to leave room \x1b[36m\x1b[32m${roomIdToLeave}\x1b[0m`);
 			const room = rooms.get(roomIdToLeave);
+
+			if (room.hasStarted)
+			{
+				const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
+				gameToUpdate.lose();
+				const games = room.games;
+				io.in(data.roomId).emit("gamesInRoom", games);
+			}
 			room.leave(client);
 			if(room.clients.size === 0) {
 				rooms.delete(room.id)
@@ -154,11 +161,8 @@ io.on('connection', (socket) => {
 		});
 
 		socket.on('getGames', (data) => {
-			console.log('--------');
-			console.log(data);
 			const room = rooms.get(data.roomId);
-			const games = room.games;
-			io.in(data.roomId).emit("gamesInRoom", games);
+			io.in(data.roomId).emit("gamesInRoom", room.games);
 		});
 
 		socket.on('getIndividualGame', (data) => {
@@ -167,40 +171,30 @@ io.on('connection', (socket) => {
 			socket.emit("getIndividualGame", game);
 		});
 
-	socket.on('rawDrop', (data) => {
-		console.log('receive rawdrop');
-		const room = rooms.get(data.roomId);
-		const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
-		gameToUpdate.drop();
-		// console.log('-send-')
-		// console.log(gameToUpdate.stage);
-		// console.log('--')
-		const games = room.games;
-		io.in(data.roomId).emit("playerMoved", games);
-	});
-
-	socket.on('move', (data) => {
-		console.log('receive move', data);
-		const room = rooms.get(data.roomId);
-		const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
-		gameToUpdate.move(data.keyCode);
-		const games = room.games;
-		io.in(data.roomId).emit("playerMoved", games);
-	});
-
-		socket.on('playerUpdate', (data) => {
-			// console.log('-receive-')
-			// console.log(data.stage[0]);
-			// console.log('--')
+		socket.on('rawDrop', (data) => {
+			console.log('receive rawdrop');
 			const room = rooms.get(data.roomId);
 			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
-			gameToUpdate.updateStage();
-			gameToUpdate.updateKey(data.keyCode);
-			// console.log('-send-')
-			// console.log(gameToUpdate.stage);
-			// console.log('--')
-			const games = room.games;
-			io.in(data.roomId).emit("playerMoved", games);
+			gameToUpdate.drop();
+			const gameEnded = room.games.every(game => game.gameOver === true);
+			if (gameEnded) {
+				console.log('they all lost');
+				const highestScore = Math.max.apply(Math, room.games.map(function (o) { return o.score; }));
+				const winnerGame = room.games.find(function (o) { return o.score == highestScore; });
+				console.log(winnerGame.playerName);
+				winnerGame.setWin();
+				io.in(data.roomId).emit("gameEnd", winnerGame.playerName, winnerGame.score);
+			}
+			io.in(data.roomId).emit("playerMoved", room.games);
+		});
+
+		socket.on('move', (data) => {
+			console.log('receive move', data);
+			const room = rooms.get(data.roomId);
+			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
+			gameToUpdate.move(data.keyCode);
+			io.in(data.roomId).emit("playerMoved", room.games);
+
 		});
 });
 

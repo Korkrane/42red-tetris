@@ -19,15 +19,10 @@ class Room{
 
     addClient(client)
     {
-      if(client.room){
-        throw new Error('Client already in a room');
-      }
       this.clients.add(client);
-
       const game = new Game(client.name, this.tetrominoSeed);
       this.games.push(game);
       client.room = this;
-
     }
 
     leave(client)

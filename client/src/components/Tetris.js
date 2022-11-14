@@ -17,19 +17,25 @@ const Tetris = ({start, name, game, me, setCounter}) => {
 
         if (start === true) {
             console.log('should set drop time');
-            setDropTime(1000);
+            setDropTime(500);
         }
     }, [start, setCounter])
 
     useEffect(() => {
-        setDropTime(1000 / (game.level + 1) + 400);
+        setDropTime(500 / (game.level + 1) + 400);
     }, [game.level])
 
     const drop = () => {
         if (start === true)
         {
-            console.log("emit rawdrop");
-            socket.emit("rawDrop", { roomId: location.state.roomId });
+            if(!game.gameOver)
+            {
+                if (me === name)
+                {
+                    console.log("emit rawdrop");
+                    socket.emit("rawDrop", { roomId: location.state.roomId });
+                }
+            }
         }
     };
 
@@ -39,9 +45,11 @@ const Tetris = ({start, name, game, me, setCounter}) => {
     }, dropTime);
 
     const move = ({ keyCode }) => {
-        // console.log(keyCode, name, Object.values(me)[0], me);
-        if (me === name && start === true)
-            socket.emit("move", {keyCode:keyCode, roomId: location.state.roomId});
+        if (me === name && start === true && !game.gameOver)
+        {
+            console.log("emit move");
+            socket.emit("move", { keyCode: keyCode, roomId: location.state.roomId });
+        }
     };
 
     return (
@@ -70,7 +78,7 @@ const Tetris = ({start, name, game, me, setCounter}) => {
                 {game.gameOver ? (
                    null
                 ) : (
-                    <div>
+                    <div >
                         <Display text={`Player: ${game.playerName}`} />
                         <Display text={`Score: ${game.score}`} />
                         <Display text={`rows: ${game.rows}`} />

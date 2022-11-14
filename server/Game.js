@@ -18,8 +18,25 @@ class Game{
         this.player = this.initPlayer();
         this.miniStage = this.createStage(4, 4);
         this.nextTetromino = null;
+        this.admin = false;
+        this.win = false;
     }
 
+    setWin() {
+        this.win = true;
+    }
+
+
+    setAdmin()
+    {
+        this.admin = true;
+    }
+
+    lose()
+    {
+        console.log('gameover');
+        this.gameOver = true;
+    }
 
     setMiniStage(nextTetromino) {
         this.nextTetromino = nextTetromino;
@@ -105,7 +122,6 @@ class Game{
     }
 
     updatePlayerPos({x, y, collided}) {
-        console.log('update player pos')
         this.player.collided = collided;
         this.player.pos.x += x;
         this.player.pos.y += y;
@@ -118,7 +134,7 @@ class Game{
             this.updatePlayerPos({ x: 0, y: 1, collided: false });
         } else {
             if (this.player.pos.y < 1) {
-                this.gameOver = true;
+                this.lose();
             }
             this.updatePlayerPos({ x: 0, y: 0, collided: true });
         }
@@ -129,7 +145,6 @@ class Game{
         let deletedRows = 0;
         newStage.forEach(function(item, index, object){
             if (item.findIndex(cell => cell[0] === 0) === -1) {
-                console.log('full row');
                 object.splice(index, 1)
                 deletedRows += 1;
                 object.unshift(new Array(newStage[0].length).fill([0, 'clear']));
@@ -165,7 +180,6 @@ class Game{
         });
         // Then check if we collided
         if (this.player.collided) {
-            console.log('eee')
             this.resetPlayer();
             this.score += 10;
             this.stage = this.sweepRows(newStage);
@@ -197,10 +211,6 @@ class Game{
         }
     }
 
-    dropPlayer() {
-        this.drop();
-     }
-
     rotate(matrix, dir) {
         // Make the rows to become cols (transpose)
         const rotatedTetro = matrix.map((_, index) =>
@@ -212,12 +222,8 @@ class Game{
     }
 
     playerRotate(stage, dir) {
-        console.log('this tetro:', this.tetromino)
         const clonedPlayer = this.player;
         clonedPlayer.tetromino = this.rotate(clonedPlayer.tetromino, dir);
-
-        console.log('cloned tetro:', clonedPlayer.tetromino)
-
         const pos = clonedPlayer.pos.x;
         let offset = 1;
         while (this.checkCollision(clonedPlayer, stage, { x: 0, y: 0 })) {
@@ -235,7 +241,6 @@ class Game{
 
     move(keyCode)
     {
-        console.log(keyCode)
         this.keyCode = keyCode;
         if (!this.gameOver) {
             if (keyCode === 37) {
@@ -243,7 +248,7 @@ class Game{
             } else if (keyCode === 39) {
                 this.movePlayer(1);
             } else if (keyCode === 40) {
-                this.dropPlayer();
+                this.drop();
             } else if (keyCode === 38) {
                 this.playerRotate(this.stage, 1);
             }
