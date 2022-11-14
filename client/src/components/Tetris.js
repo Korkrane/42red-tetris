@@ -9,7 +9,7 @@ import Display from './Display';
 import { socket } from './Menu';
 
 
-const Tetris = ({start, name, game, me}) => {
+const Tetris = ({start, name, game, me, setCounter}) => {
     const location = useLocation();
     const [dropTime, setDropTime] = useState(null);
 
@@ -19,7 +19,7 @@ const Tetris = ({start, name, game, me}) => {
             console.log('should set drop time');
             setDropTime(1000);
         }
-    }, [start])
+    }, [start, setCounter])
 
     useEffect(() => {
         setDropTime(1000 / (game.level + 1) + 400);
@@ -39,14 +39,14 @@ const Tetris = ({start, name, game, me}) => {
     }, dropTime);
 
     const move = ({ keyCode }) => {
-        if (Object.values(me)[0] === name && start === true)
+        // console.log(keyCode, name, Object.values(me)[0], me);
+        if (me === name && start === true)
             socket.emit("move", {keyCode:keyCode, roomId: location.state.roomId});
     };
 
     return (
         <Box
             id="indivTetris"
-            // role="button"
             tabIndex="0"
             onKeyDown={e => move(e)}
             sx={{ outline:'none', flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}

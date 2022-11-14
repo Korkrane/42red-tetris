@@ -11,14 +11,10 @@ const PlayArea = ({me, soloGameMode}) => {
     const [once, setOnce] = useState(false);
     const [start, setStart] = useState(false);
     const location = useLocation();
-    const [counter, setCounter] = useState(5);
+    const [counter, setCounter] = useState(0);
 
     useEffect(() => {
-
-        if (soloGameMode === true)
-            counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
-        else
-            setCounter(0);
+        counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
         return () => {
         };
     }, [counter, soloGameMode])
@@ -35,11 +31,14 @@ const PlayArea = ({me, soloGameMode}) => {
 
         socket.on('gameStart', (data) => {
             setStart(true);
+            setCounter(5);
         })
 
         if (once === false) {
             console.log('should pop once games');
             socket.emit("getGames", { roomId: location.state.roomId });
+            if (soloGameMode === true)
+                setCounter(5);
         }
         setOnce(true);
 
@@ -53,17 +52,18 @@ const PlayArea = ({me, soloGameMode}) => {
 
     return(
         <>
-            {/* {counter !== 0 ?
-                <Title style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{counter}</Title>
-            : */}
-            {/* <> */}
-                    <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, /*backgroundColor: "#fb44"*/ }}>
-                        {games.map((item, index) => (
-                            <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me} />
-                        ))}
-                    </Box>
-            {/* </> */}
-            {/* } */}
+            {counter !== 0
+            ? <Title style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{counter}</Title>
+            : start === true
+                    ? <>
+                        <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, /*backgroundColor: "#fb44"*/ }}>
+                            {games.map((item, index) => (
+                                <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me} setCounter={setCounter}/>
+                            ))}
+                        </Box>
+                        </>
+                    : null
+            }
         </>
     );
 }
