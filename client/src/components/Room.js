@@ -10,31 +10,12 @@ const Room = () => {
 
     const [players, setPlayers] = useState([]);
     const location = useLocation();
-    const [once, setOnce] = useState(false);
     const navigate = useNavigate();
-
-    const leaveRoom = () => {
-        console.log('you leave room ' + location.state.roomId);
-        socket.emit("leaveRoom", { roomId: location.state.roomId });
-        navigate('/');
-    }
+    const [once, setOnce] = useState(false);
 
     useEffect(() => {
-        const handleOnPop = () => {
-            console.log('receive onpop event')
-            socket.emit("leaveRoom", { roomId: location.state.roomId });
-            navigate('/');
-        }
 
-        window.addEventListener('popstate', handleOnPop);
-
-        return() => {
-             window.removeEventListener('popstate', handleOnPop)
-        }
-    }, [location.state.roomId, navigate])
-
-
-    useEffect(() => {
+        console.log('room',location.state.soloGameMode)
         socket.on('playersInRoom', (data) => {
             console.log('playersInRoom event received');
             console.log(data);
@@ -44,7 +25,10 @@ const Room = () => {
         if(once === false)
         {
             console.log('should pop once');
-            socket.emit("getPlayers", { roomId: location.state.roomId });
+            if(location.state.soloGameMode === true)
+                socket.emit('readyToPlay', { roomId: location.state.roomId });
+            else
+                socket.emit("getPlayers", { roomId: location.state.roomId });
         }
         setOnce(true);
 
@@ -52,6 +36,12 @@ const Room = () => {
             socket.off('playersInRoom');
         };
     }, [location.state.roomId, once, players])
+
+    const leaveRoom = () => {
+        console.log('you leave room ' + location.state.roomId);
+        socket.emit("leaveRoom", { roomId: location.state.roomId });
+        navigate('/');
+    }
 
     const isDesktopOrLaptop = useMediaQuery({ minWidth: 1024 })
     const isBigScreen = useMediaQuery({ minWidth: 1824 })
@@ -63,15 +53,15 @@ const Room = () => {
         <>
 
             <Box sx={{ display: 'flex', maxHeight: '100%', minHeight: '100%', minWidth: '100%', justifyContent: 'flex-start'}}>
-                <div id="screen">
+                {/* <div id="screen">
                     {isDesktopOrLaptop && <p>You are a desktop or laptop</p>}
                     {isBigScreen && <p>You  have a huge screen</p>}
                     {isTabletOrMobile && <p>You are a tablet or mobile phone</p>}
                     <p>Your are in {isPortrait ? 'portrait' : 'landscape'} orientation</p>
                     {isRetina && <p>You are retina</p>}
-                </div>
-                <PlayArea me={location.state.userName}/>
-                <RoomDetails players={players} leaveRoom={leaveRoom}/>
+                </div> */}
+                <PlayArea me={location.state.userName} soloGameMode={location.state.soloGameMode} />
+                <RoomDetails players={players} leaveRoom={leaveRoom} soloGameMode={location.state.soloGameMode}/>
             </Box>
         </>
     );

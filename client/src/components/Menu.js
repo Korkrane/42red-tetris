@@ -8,13 +8,11 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { autocompleteClasses, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import TagIcon from '@mui/icons-material/Tag';
 import InputAdornment from '@mui/material/InputAdornment';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { color } from '@mui/system';
 import { useMediaQuery } from 'react-responsive'
-import { palette } from '@mui/system';
 import { grey } from '@mui/material/colors';
 export const socket = socketIO.connect('http://localhost:4000');
 
@@ -45,7 +43,7 @@ const Menu = () => {
 
         socket.on('navToRoom', (data) => {
             const hash = data.id + '[' + nameInput + ']';
-            navigate("/" + hash, {state:{roomId: data.id, userName:nameInput}});
+            navigate("/" + hash, {state:{roomId: data.id, userName:nameInput, soloGameMode:data.soloGame}});
         });
 
         socket.on('cantJoin', (data) => {
@@ -86,11 +84,11 @@ const Menu = () => {
     };
 
     const createRoom = () => {
-        socket.emit('createRoom',{name:nameInput});
+        socket.emit('createRoom',{name:nameInput, soloGame:true});
     }
 
     const joinRoom = () => {
-        socket.emit('joinRoom', {name:nameInput, id:roomIdInput});
+        socket.emit('joinRoom', { name: nameInput, id: roomIdInput, soloGame: false });
     };
 
     const handleNameInputChange = (e) => {

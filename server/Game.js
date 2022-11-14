@@ -136,6 +136,7 @@ class Game{
             }
 
         })
+        this.score += 100 * deletedRows;
         this.rows += deletedRows;
 
         if (this.rows >= (this.level + 1) * 3)
@@ -164,7 +165,9 @@ class Game{
         });
         // Then check if we collided
         if (this.player.collided) {
+            console.log('eee')
             this.resetPlayer();
+            this.score += 10;
             this.stage = this.sweepRows(newStage);
         }
         this.stage = newStage;

@@ -25,12 +25,13 @@ io.on('connection', (socket) => {
 
 		socket.on('createRoom', (data) => {
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m creates a new Room`);
+			console.log(data.soloGame);
 			client.setName(data.name);
 			const room = new Room(helpers.createId());
 			rooms.set(room.id, room);
 			room.addClient(client);
 			socket.join(room.id);
-			socket.emit('navToRoom',{id: room.id})
+			socket.emit('navToRoom',{id: room.id, soloGame:data.soloGame})
 			const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
 			io.in(data.id).emit("playersInRoom", playersInRoom);
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m has joined the room \x1b[36m\x1b[32m${room.id}\x1b[0m after creation`);
@@ -43,16 +44,15 @@ io.on('connection', (socket) => {
 			//If client join a room that doesn't exist, create it and add it to our map.
 			if(room === undefined)
 			{
-				// const room = new Room(data.id);
+				console.log('is undefined');
 
-				// rooms.set(data.id, room);
-				// room.addClient(client);
-				// socket.emit('navToRoom',{id: data.id})
-				// socket.join(data.id);
-				// const PlayersNameInRoom = [...room.clients].map(x => x.name);
-				// console.log(PlayersNameInRoom + ' are in ' + data.id);
-				// io.in(data.id).emit("playersInRoom", {players:PlayersNameInRoom});
-				// console.log('A');
+				const room = new Room(data.id);
+				rooms.set(room.id, room);
+				room.addClient(client);
+				socket.join(room.id);
+				socket.emit('navToRoom', { id: data.id, soloGame: data.soloGame })
+				const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+				io.in(data.id).emit("playersInRoom", playersInRoom);
 			}
 			else
 			{
@@ -66,7 +66,7 @@ io.on('connection', (socket) => {
 					return;
 				}
 				room.addClient(client);
-				socket.emit('navToRoom',{id: data.id})
+				socket.emit('navToRoom', { id: data.id, soloGame: data.soloGame })
 				socket.join(data.id);
 				const playersInRoom = [...room.clients].map(x => ({name: x.name, status:x.readyToPlay}));
 				io.in(data.id).emit("playersInRoom", playersInRoom);

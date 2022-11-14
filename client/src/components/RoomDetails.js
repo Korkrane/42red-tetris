@@ -5,17 +5,10 @@ import { socket } from './Menu'
 import Players from './Players';
 import Chat from './Chat';
 import RoomButton from './RoomButton';
-import Button from '@mui/material/Button';
 // import { IconButton } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import { grey } from '@mui/material/colors';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import './RoomDetails.css';
-import { AiFillPlusCircle } from 'react-icons/ai';
-import { IconContext } from "react-icons";
 
-const RoomDetails = ({players, leaveRoom}) => {
+const RoomDetails = ({players, leaveRoom, soloGameMode}) => {
 
 	const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
@@ -31,16 +24,16 @@ const RoomDetails = ({players, leaveRoom}) => {
         setMessage('');
     }
 
-
-
 	const setPlayerReady = () => {
 		setFlag(!flag);
-		  socket.emit('readyToPlay', { roomId: location.state.roomId });
+		socket.emit('readyToPlay', { roomId: location.state.roomId });
 	  };
 
     const hideDetails = () => {
         setHide(!hide);
     };
+
+
 
 	useEffect(() => {
 
@@ -55,16 +48,42 @@ const RoomDetails = ({players, leaveRoom}) => {
         };
     }, [location.state.roomId, navigate, players])
 
+    const onEmitLeaveLobby = (e) => {
+        e.preventDefault();
+        console.log("you leave lobby " + location.state.roomId);
+        socket.emit("leaveRoom", { roomId: location.state.roomId });
+        navigate("/");
+    };
+
+    useEffect(() => {
+        window.addEventListener(
+            "popstate",
+            (e) => {onEmitLeaveLobby(e);},
+            { once: true } // This guy makes sure the listener will be removed after invoking it
+        );
+
+        return () => {
+            window.removeEventListener("popstate", onEmitLeaveLobby);
+        };
+    }, []);
+
 	return (
 		<>
-            <Box m={2} sx={{position:'absolute', bottom:0, right:0}}>
-                <button class="glow-on-hover" onClick={hideDetails}>{hide === true ? '+' : '-'}</button>
-            </Box>
-            <Box id="details" m={2} sx={{ maxHeight: '100%', display:(hide === true) ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', maxWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "rgba(20,20,20, 1)" }}>
-				<Players players={players}/>
-				<Chat messages={messages} sendMessage={sendMessage} setMessage={setMessage} message={message} />
-				<RoomButton leaveRoom={leaveRoom} setPlayerReady={setPlayerReady} flag={flag}/>
-			</Box>
+            {soloGameMode === false ?
+                <>
+                    <Box m={2} sx={{position:'absolute', bottom:0, right:0}}>
+                        <button class="glow-on-hover" onClick={hideDetails}>{hide === true ? '+' : '-'}</button>
+                    </Box>
+                    <Box id="details" m={2} sx={{ maxHeight: '100%', display:(hide === true) ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', maxWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "rgba(20,20,20, 1)" }}>
+                        <Players players={players}/>
+                        <Chat messages={messages} sendMessage={sendMessage} setMessage={setMessage} message={message} />
+                        <RoomButton leaveRoom={leaveRoom} setPlayerReady={setPlayerReady} flag={flag}/>
+                    </Box>
+                </>
+            :
+            <></>
+            }
+
 		</>
 	)
 }

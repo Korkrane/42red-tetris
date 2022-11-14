@@ -3,13 +3,25 @@ import Tetris from './Tetris';
 import { useEffect, useState } from 'react';
 import {useLocation} from 'react-router-dom';
 import { socket } from './Menu'
+import { Title } from './Button';
 
-const PlayArea = (me) => {
+const PlayArea = ({me, soloGameMode}) => {
 
     const [games, setGames] = useState([]);
     const [once, setOnce] = useState(false);
     const [start, setStart] = useState(false);
     const location = useLocation();
+    const [counter, setCounter] = useState(5);
+
+    useEffect(() => {
+
+        if (soloGameMode === true)
+            counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
+        else
+            setCounter(0);
+        return () => {
+        };
+    }, [counter, soloGameMode])
 
     useEffect(() => {
 
@@ -41,11 +53,17 @@ const PlayArea = (me) => {
 
     return(
         <>
-            <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, /*backgroundColor: "#fb44"*/ }}>
-                {games.map((item, index) => (
-                    <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me}/>
-                ))}
-            </Box>
+            {/* {counter !== 0 ?
+                <Title style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{counter}</Title>
+            : */}
+            {/* <> */}
+                    <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, /*backgroundColor: "#fb44"*/ }}>
+                        {games.map((item, index) => (
+                            <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me} />
+                        ))}
+                    </Box>
+            {/* </> */}
+            {/* } */}
         </>
     );
 }
