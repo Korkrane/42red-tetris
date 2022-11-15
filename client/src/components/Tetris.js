@@ -59,15 +59,8 @@ const Tetris = ({start, name, game, me, setCounter}) => {
             onKeyDown={e => move(e)}
             sx={{ outline:'none', flexGrow: 1, maxWidth: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}
         >
-            {game.gameOver ? (
-                <div>
-                    <Display text={`Player: ${game.playerName}`} />
-                    <Display text={`Score: ${game.score}`} />
-                    <Display text={`rows: ${game.rows}`} />
-                    <Display text={`Level: ${game.level}`} />
-                </div>)
-                :
-                (<TetrisGrid stage={game.stage} />)
+            {
+                <TetrisGrid stage={game.stage} />
             }
             <Box sx={{
                 width: '100%',
@@ -75,9 +68,6 @@ const Tetris = ({start, name, game, me, setCounter}) => {
                 display: 'block',
                 padding: '0 20px',
             }}>
-                {game.gameOver ? (
-                   null
-                ) : (
                     <div >
                         <Display text={`Player: ${game.playerName}`} />
                         <Display text={`Score: ${game.score}`} />
@@ -85,8 +75,6 @@ const Tetris = ({start, name, game, me, setCounter}) => {
                         <Display text={`Level: ${game.level}`} />
                         <MiniTetrisGrid stage={game.miniStage} />
                     </div>
-
-                )}
             </Box>
         </Box>
     );

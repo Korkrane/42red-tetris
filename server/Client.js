@@ -25,6 +25,12 @@ class Client{
     resetReady() {
       this.readyToPlay = !this.readyToPlay;
     }
+
+    clearStatus()
+    {
+      this.readyToPlay = false;
+      this.admin = false;
+    }
   }
 
 module.exports = Client;

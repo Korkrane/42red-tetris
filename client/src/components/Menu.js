@@ -68,7 +68,7 @@ const Menu = () => {
 
         return () => {
             socket.off('navToRoom');
-            socket.off('roomChecked');
+            // socket.off('roomChecked');
             socket.off('cantJoin');
         };
     }, [navigate, nameInput]);

@@ -16,7 +16,7 @@ const Room = () => {
 
     useEffect(() => {
         socket.on('playersInRoom', (data) => {
-            console.log('playersInRoom event received');
+            console.log('playersInRoom event received', data);
             setPlayers(data);
         })
 
@@ -36,7 +36,7 @@ const Room = () => {
 
     const leaveRoom = () => {
         console.log('you leave room ' + location.state.roomId);
-        socket.emit("leaveRoom", { roomId: location.state.roomId });
+        socket.emit("leaveRoom", { id: location.state.roomId });
         navigate('/');
     }
 

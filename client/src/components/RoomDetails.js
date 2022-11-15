@@ -52,7 +52,7 @@ const RoomDetails = ({me, players, leaveRoom, soloGameMode, gameEnd, gameStarted
     const onEmitLeaveLobby = (e) => {
         e.preventDefault();
         console.log("you leave lobby " + location.state.roomId);
-        socket.emit("leaveRoom", { roomId: location.state.roomId });
+        socket.emit("leaveRoom", { id: location.state.roomId });
         navigate("/");
     };
 
