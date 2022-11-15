@@ -18,18 +18,11 @@ class Game{
         this.player = this.initPlayer();
         this.miniStage = this.createStage(4, 4);
         this.nextTetromino = null;
-        this.admin = false;
         this.win = false;
     }
 
     setWin() {
         this.win = true;
-    }
-
-
-    setAdmin()
-    {
-        this.admin = true;
     }
 
     lose()
@@ -79,6 +72,24 @@ class Game{
         this.player.collided = false;
 
 
+    }
+
+    reset()
+    {
+        console.log('reset all the game details');
+        this.keyCode = null;
+        this.stage = this.createStage(20, 12);
+        this.gameOver = false;
+        this.score = 0;
+        this.rows = 0;
+        this.level = 0;
+        // this.tetrominoSeed = tetrominoSeed;
+        this.tetromino = this.tetrominoSeed[0];
+        this.i = 0;
+        this.player = this.initPlayer();
+        this.miniStage = this.createStage(4, 4);
+        this.nextTetromino = null;
+        this.win = false;
     }
 
     setStage()

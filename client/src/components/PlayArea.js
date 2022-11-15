@@ -54,9 +54,12 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
         })
 
         socket.on('gameStart', (data) => {
+            console.log('gameStart event received');
+            setWinner('');
             setStart(true);
             setGameStarted(true);
             setCounter(3);
+            console.log(counter);
         })
 
 
@@ -73,10 +76,9 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
             socket.off('playerMoved');
             socket.off('gameStart');
         };
-    }, [games, location.state.roomId, once, soloGameMode])
+    }, [games, location.state.roomId, once, soloGameMode, counter, setGameStarted, setStart,setCounter])
 
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 })
-
     return(
         <>
             {

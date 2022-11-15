@@ -15,11 +15,8 @@ const Room = () => {
     const [gameStarted, setGameStarted] = useState(false);
 
     useEffect(() => {
-
-        console.log('room',location.state.soloGameMode)
         socket.on('playersInRoom', (data) => {
             console.log('playersInRoom event received');
-            console.log(data);
             setPlayers(data);
         })
 
@@ -46,7 +43,7 @@ const Room = () => {
     return (
         <>
             <Box sx={{ display: 'flex', maxHeight: '100%', minHeight: '100%', minWidth: '100%', justifyContent: 'flex-start'}}>
-                <RoomDetails players={players} leaveRoom={leaveRoom} soloGameMode={location.state.soloGameMode} gameEnd={gameEnd} gameStarted={gameStarted} />
+                <RoomDetails me={location.state.userName}  players={players} leaveRoom={leaveRoom} soloGameMode={location.state.soloGameMode} gameEnd={gameEnd} gameStarted={gameStarted} />
                 <PlayArea me={location.state.userName} soloGameMode={location.state.soloGameMode} setGameEnd={setGameEnd} setGameStarted={setGameStarted} />
             </Box>
         </>

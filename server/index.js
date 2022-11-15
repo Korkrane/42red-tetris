@@ -27,12 +27,13 @@ io.on('connection', (socket) => {
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m creates a new Room`);
 			console.log(data.soloGame);
 			client.setName(data.name);
+			client.setAdmin();
 			const room = new Room(helpers.createId());
 			rooms.set(room.id, room);
 			room.addClient(client);
 			socket.join(room.id);
 			socket.emit('navToRoom',{id: room.id, soloGame:data.soloGame})
-			const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+			const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin:x.admin }));
 			io.in(data.id).emit("playersInRoom", playersInRoom);
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m has joined the room \x1b[36m\x1b[32m${room.id}\x1b[0m after creation`);
 		});
@@ -43,18 +44,19 @@ io.on('connection', (socket) => {
 			const room = rooms.get(data.id);
 			if(room === undefined)
 			{
+				console.log(data.id, 'undefined')
 				const room = new Room(data.id);
-				// const game = room.games.find(({ playerName }) => playerName === client.name)
-				// game.setAdmin();
+				client.setAdmin();
 				rooms.set(room.id, room);
 				room.addClient(client);
 				socket.join(room.id);
 				socket.emit('navToRoom', { id: data.id, soloGame: data.soloGame })
-				const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+				const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
 				io.in(data.id).emit("playersInRoom", playersInRoom);
 			}
 			else
 			{
+				console.log(data.id, 'defined')
 				const game = room.games.find(({ playerName }) => playerName === client.name)
 				if(room.hasStarted === true){
 					socket.emit("cantJoin", '- game has started');
@@ -67,7 +69,7 @@ io.on('connection', (socket) => {
 				room.addClient(client);
 				socket.emit('navToRoom', { id: data.id, soloGame: data.soloGame })
 				socket.join(data.id);
-				const playersInRoom = [...room.clients].map(x => ({name: x.name, status:x.readyToPlay}));
+				const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
 				io.in(data.id).emit("playersInRoom", playersInRoom);
 			}
 			console.log(`${socket.id}\x1b[36m\x1b[32m[${client.name}]\x1b[0m has joined the room \x1b[36m\x1b[32m${data.id}\x1b[0m`);
@@ -76,6 +78,8 @@ io.on('connection', (socket) => {
 		socket.on('leaveRoom', (data) => {
 			const roomIdToLeave = data.roomId;
 			client.readyToPlay = false;
+			if(client.admin)
+				client.unsetAdmin();
 			console.log(roomIdToLeave);
 			console.log(`${socket.id} wants to leave room \x1b[36m\x1b[32m${roomIdToLeave}\x1b[0m`);
 			const room = rooms.get(roomIdToLeave);
@@ -93,7 +97,7 @@ io.on('connection', (socket) => {
 				console.log(`room ${room.id} is empty and has been deleted.`)
 			}
 			socket.leave(room.id);
-			const playersInRoom = [...room.clients].map(x => ({name: x.name, status:x.readyToPlay}));
+			const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
 			io.in(roomIdToLeave).emit("playersInRoom", playersInRoom);
 		});
 
@@ -107,7 +111,7 @@ io.on('connection', (socket) => {
 			if(room){
 					console.log(`He was in ${room.id}`)
 					room.leave(client);
-					const playersInRoom = [...room.clients].map(x => ({name: x.name, status:x.readyToPlay}));
+				const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
 					io.in(room.id).emit("playersInRoom", playersInRoom);
 					if(room.clients.size === 0) {
 						rooms.delete(room.id)
@@ -123,7 +127,7 @@ io.on('connection', (socket) => {
 
 			socket.on('getPlayers', (data) => {
 				const room = rooms.get(data.roomId);
-				const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+				const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
 				// console.log(PlayersNameInroom + ' are in ' + data.id);
 				console.log(playersInRoom);
 				// if(socket.rooms.has(data.roomId))
@@ -137,7 +141,7 @@ io.on('connection', (socket) => {
 			else
 				client.readyToPlay = false;
 			const room = rooms.get(data.roomId);
-			const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+			const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
 			io.in(data.roomId).emit("playersInRoom", playersInRoom);
 
 			console.log(playersInRoom);
@@ -184,6 +188,16 @@ io.on('connection', (socket) => {
 				console.log(winnerGame.playerName);
 				winnerGame.setWin();
 				io.in(data.roomId).emit("gameEnd", winnerGame.playerName, winnerGame.score);
+				//TODO reset game of every1
+				room.hasStarted = false;
+				room.clients.forEach(client => {
+					client.resetReady();
+				})
+				room.games.forEach(game => {
+					game.reset();
+				})
+				const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
+				io.in(data.roomId).emit("playersInRoom", playersInRoom);
 			}
 			io.in(data.roomId).emit("playerMoved", room.games);
 		});
@@ -201,13 +215,39 @@ io.on('connection', (socket) => {
 				console.log(winnerGame.playerName);
 				winnerGame.setWin();
 				io.in(data.roomId).emit("gameEnd", winnerGame.playerName, winnerGame.score);
+				//TODO reset game of every1
+				room.hasStarted = false;
+				room.clients.forEach(client => {
+					console.log('set unready');
+					client.resetReady();
+				})
+				room.games.forEach(game => {
+					game.reset();
+				})
+				const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
+				io.in(data.roomId).emit("playersInRoom", playersInRoom);
 			}
 			io.in(data.roomId).emit("playerMoved", room.games);
-
 		});
 
 	socket.on('resetGame', (data) => {
 		console.log('receive resetGame', data);
+
+		const room = rooms.get(data.roomId);
+		// const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
+		// io.in(data.roomId).emit("playersInRoom", playersInRoom);
+
+		// console.log(playersInRoom);
+		room.hasStarted = true;
+		console.log(room);
+		const games = room.games;
+		console.log('--foreach--')
+		games.forEach(game => {
+			game.setStage();
+		})
+		console.log('--end of foreach--')
+		console.log('emit gameStart');
+		io.in(data.roomId).emit("gameStart");
 		// const room = rooms.get(data.roomId);
 		// io.in(data.roomId).emit("gameReseted", room.games);
 
