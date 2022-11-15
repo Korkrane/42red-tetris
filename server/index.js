@@ -193,9 +193,36 @@ io.on('connection', (socket) => {
 			const room = rooms.get(data.roomId);
 			const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
 			gameToUpdate.move(data.keyCode);
+			const gameEnded = room.games.every(game => game.gameOver === true);
+			if (gameEnded) {
+				console.log('they all lost');
+				const highestScore = Math.max.apply(Math, room.games.map(function (o) { return o.score; }));
+				const winnerGame = room.games.find(function (o) { return o.score == highestScore; });
+				console.log(winnerGame.playerName);
+				winnerGame.setWin();
+				io.in(data.roomId).emit("gameEnd", winnerGame.playerName, winnerGame.score);
+			}
 			io.in(data.roomId).emit("playerMoved", room.games);
 
 		});
+
+	socket.on('resetGame', (data) => {
+		console.log('receive resetGame', data);
+		// const room = rooms.get(data.roomId);
+		// io.in(data.roomId).emit("gameReseted", room.games);
+
+
+		// const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay }));
+		// playersInRoom.forEach(player => {
+		// 	player.status = false;
+		// })
+
+		// // console.log(PlayersNameInroom + ' are in ' + data.id);
+		// console.log(playersInRoom);
+		// // if(socket.rooms.has(data.roomId))
+		// // 	console.log('socket is in room');
+		// socket.emit("playersInRoom", playersInRoom);
+	});
 });
 
 httpServer.listen(PORT, () => {

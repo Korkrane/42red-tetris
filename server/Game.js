@@ -39,6 +39,7 @@ class Game{
     }
 
     setMiniStage(nextTetromino) {
+        //BUG WHEN END OF ARRAY OF SEED CZ NOT UPDATE AT THE GOOD MOMENT
         this.nextTetromino = nextTetromino;
         let clonedPlayer = { tetromino: this.nextTetromino.shape, pos: { x: 0, y: 0 }, collided:false }
 

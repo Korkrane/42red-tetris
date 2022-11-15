@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import {useLocation} from 'react-router-dom';
 import { socket } from './Menu'
 import { Title } from './Button';
+import { useMediaQuery } from 'react-responsive';
 
-const PlayArea = ({me, soloGameMode}) => {
+const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
 
     const [games, setGames] = useState([]);
     const [once, setOnce] = useState(false);
@@ -17,21 +18,30 @@ const PlayArea = ({me, soloGameMode}) => {
 
     useEffect(() => {
         counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
-        return () => {
-        };
-    }, [counter, soloGameMode])
+    }, [counter])
 
     useEffect(() => {
         socket.on('gameEnd', (...data) => {
             console.log('gameEnd');
             setWinner(data[0]);
             setWinnerscore(data[1]);
+            setGameEnd(true);
         })
 
         return () => {
             socket.off('gameEnd');
         }
     }, [setWinner])
+
+    useEffect(() => {
+        socket.on('gameReseted', (data) => {
+            console.log('gameReseted');
+        })
+
+        return () => {
+            socket.off('gameReseted');
+        }
+    }, [games])
 
     useEffect(() => {
 
@@ -45,6 +55,7 @@ const PlayArea = ({me, soloGameMode}) => {
 
         socket.on('gameStart', (data) => {
             setStart(true);
+            setGameStarted(true);
             setCounter(3);
         })
 
@@ -62,22 +73,22 @@ const PlayArea = ({me, soloGameMode}) => {
             socket.off('playerMoved');
             socket.off('gameStart');
         };
-    }, [games, location.state.roomId, once])
+    }, [games, location.state.roomId, once, soloGameMode])
+
+    const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 })
 
     return(
         <>
             {
                 winner !== ''
-                    ? <Title style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{winner} <span style={{ color: 'white' }}>has won with</span> {winnerScore} <span style={{ color: 'white' }}>pts</span></Title>
+                ? soloGameMode === true
+                        ? <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}><span style={{ color: 'white' }}>score: </span>{winnerScore} pts</Title>
+                        : <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{winner} <span style={{ color: 'white' }}>has won with</span> {winnerScore} <span style={{ color: 'white' }}>pts</span></Title>
                 : counter !== 0
-                        ?
-                        <>
-                            { soloGameMode === true ? null : <div>LOL</div>}
-                            <Title style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{counter}</Title>
-                        </>
+                        ? <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{counter}</Title>
                         : start === true
                             ? <>
-                                <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5, /*backgroundColor: "#fb44"*/ }}>
+                                <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5}}>
                                     {games.map((item, index) => (
                                         <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me} setCounter={setCounter} />
                                     ))}

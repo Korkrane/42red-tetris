@@ -4,7 +4,6 @@ import { socket } from './Menu'
 import { Box } from '@mui/system';
 import PlayArea from './PlayArea';
 import RoomDetails from './RoomDetails';
-import { useMediaQuery } from 'react-responsive';
 
 const Room = () => {
 
@@ -12,6 +11,8 @@ const Room = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [once, setOnce] = useState(false);
+    const [gameEnd, setGameEnd] = useState(false);
+    const [gameStarted, setGameStarted] = useState(false);
 
     useEffect(() => {
 
@@ -24,7 +25,6 @@ const Room = () => {
 
         if(once === false)
         {
-            console.log('should pop once');
             if(location.state.soloGameMode === true)
                 socket.emit('readyToPlay', { roomId: location.state.roomId });
             else
@@ -46,8 +46,8 @@ const Room = () => {
     return (
         <>
             <Box sx={{ display: 'flex', maxHeight: '100%', minHeight: '100%', minWidth: '100%', justifyContent: 'flex-start'}}>
-                <RoomDetails players={players} leaveRoom={leaveRoom} soloGameMode={location.state.soloGameMode}/>
-                <PlayArea me={location.state.userName} soloGameMode={location.state.soloGameMode} />
+                <RoomDetails players={players} leaveRoom={leaveRoom} soloGameMode={location.state.soloGameMode} gameEnd={gameEnd} gameStarted={gameStarted} />
+                <PlayArea me={location.state.userName} soloGameMode={location.state.soloGameMode} setGameEnd={setGameEnd} setGameStarted={setGameStarted} />
             </Box>
         </>
     );

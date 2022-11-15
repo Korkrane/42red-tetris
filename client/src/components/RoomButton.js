@@ -5,6 +5,8 @@ import Button from '@mui/material/Button';
 import CancelIcon from '@mui/icons-material/Cancel';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useMediaQuery } from 'react-responsive';
+import ReplayIcon from '@mui/icons-material/Replay';
+import { orange } from '@mui/material/colors';
 
 const useStyles = makeStyles((theme) => ({
     startICon: {
@@ -12,22 +14,26 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const RoomButton = ({leaveRoom, setPlayerReady, flag}) => {
+const RoomButton = ({leaveRoom, setPlayerReady, flag, gameEnd, gameStarted, resetGame}) => {
 
     const classes = useStyles();
-    const isDesktopOrLaptop = useMediaQuery({ minWidth: 1024 })
-    const isBigScreen = useMediaQuery({ minWidth: 1824 })
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 })
-    const isPortrait = useMediaQuery({ orientation: 'portrait' })
-    const isRetina = useMediaQuery({ minResolution: '2dppx' })
 
     return (
         <>
             <Box sx={{ display: "flex", justifyContent: 'space-evenly' }}>
                 <Button classes={{ startIcon: (isTabletOrMobile === true) ? classes.startICon : null }} variant="contained" startIcon={<LogoutIcon />} onClick={leaveRoom}>{isTabletOrMobile === true ? null: 'Leave'}</Button>
-                <Button classes={{ startIcon: (isTabletOrMobile === true) ? classes.startICon : null }} variant="contained" startIcon={flag ? <CancelIcon /> : <CheckCircleIcon />} onClick={setPlayerReady} color={flag ? "error" : "success"}>
-                    {isTabletOrMobile === true ? null : 'Ready'}
-                </Button>
+                {
+                    // gameEnd === true
+                    // ?
+                    //     <Button classes={{ startIcon: (isTabletOrMobile === true) ? classes.startICon : null }} variant="contained" startIcon={<ReplayIcon />} onClick={resetGame} color={"warning"}>
+                    //         {isTabletOrMobile === true ? null : 'Replay'}
+                    //     </Button>
+                    // :
+                        <Button disabled={gameStarted ? true : false} classes={{ startIcon: (isTabletOrMobile === true) ? classes.startICon : null }} variant="contained" startIcon={flag ? <CancelIcon /> : <CheckCircleIcon />} onClick={setPlayerReady} color={flag ? "error" : "success"}>
+                            {isTabletOrMobile === true ? null : 'Ready'}
+                        </Button>
+                }
             </Box>
         </>
     );

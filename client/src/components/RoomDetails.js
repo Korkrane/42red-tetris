@@ -8,7 +8,7 @@ import RoomButton from './RoomButton';
 // import { IconButton } from '@mui/material';
 import './RoomDetails.css';
 
-const RoomDetails = ({players, leaveRoom, soloGameMode}) => {
+const RoomDetails = ({players, leaveRoom, soloGameMode, gameEnd, gameStarted}) => {
 
 	const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
@@ -33,10 +33,11 @@ const RoomDetails = ({players, leaveRoom, soloGameMode}) => {
         setHide(!hide);
     };
 
-
+    const resetGame = () => {
+        socket.emit('resetGame', { roomId: location.state.roomId });
+    }
 
 	useEffect(() => {
-
         socket.on("receiveMssg", (data) => {
             console.log("receiveMssg event");
             console.log(data)
@@ -67,6 +68,12 @@ const RoomDetails = ({players, leaveRoom, soloGameMode}) => {
         };
     }, []);
 
+    // useEffect(() => {
+    //     console.log('gameEnd value in roomDetails', gameEnd);
+    //     if(gameEnd === true)
+    //         setFlag(false);
+    // }, [gameEnd])
+
 	return (
 		<>
             {soloGameMode === false ?
@@ -77,7 +84,7 @@ const RoomDetails = ({players, leaveRoom, soloGameMode}) => {
                     <Box id="details" m={2} sx={{maxHeight: '100%', display:(hide === true) ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', maxWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "rgba(20,20,20, 1)"}}>
                         <Players players={players}/>
                         <Chat messages={messages} sendMessage={sendMessage} setMessage={setMessage} message={message} />
-                        <RoomButton leaveRoom={leaveRoom} setPlayerReady={setPlayerReady} flag={flag}/>
+                        <RoomButton leaveRoom={leaveRoom} setPlayerReady={setPlayerReady} flag={flag} gameEnd={gameEnd} gameStarted={gameStarted} resetGame={resetGame}/>
                     </Box>
                 </>
             :
