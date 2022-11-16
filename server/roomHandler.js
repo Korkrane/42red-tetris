@@ -33,6 +33,22 @@ module.exports = function (socket, rooms, client, io) {
         emitPlayersInRoom(newRoom);
     });
 
+
+    const roomIsJoinable = (room) => {
+        const roomHasDuplicatePlayerName = room.games.find(({ playerName }) => playerName === client.name)
+
+        if (room.hasStarted === true) {
+            socket.emit("cantJoin", '- game has started');
+            return false;
+        }
+        else if (roomHasDuplicatePlayerName) {
+            socket.emit("cantJoin", '- duplicate playername');
+            return false;
+        }
+
+        return true;
+    }
+
     socket.on('joinRoom', (data) => {
         client.setName(data.name);
         const room = rooms.get(data.id);
@@ -43,18 +59,12 @@ module.exports = function (socket, rooms, client, io) {
             emitPlayersInRoom(newRoom);
         }
         else { //check for exceptions then make the client join the room
-            const game = room.games.find(({ playerName }) => playerName === client.name)
-            if (room.hasStarted === true) {
-                socket.emit("cantJoin", '- game has started');
-                return;
+            if(roomIsJoinable(room))
+            {
+                clientJoinRoom(room);
+                moveClientToRoom(room, data);
+                emitPlayersInRoom(room);
             }
-            else if (game) {
-                socket.emit("cantJoin", '- duplicate playername');
-                return;
-            }
-            clientJoinRoom(room);
-            moveClientToRoom(room, data);
-            emitPlayersInRoom(room);
         }
     });
 
