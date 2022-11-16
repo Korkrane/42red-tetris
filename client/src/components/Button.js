@@ -6,8 +6,6 @@ const MButton = styled.button`
   justify-content:center;
   box-sizing: border-box;
 
-
-
   min-height:${props => (props.isTabletOrMobile === true ? '50px' : '100px')};
   width: 30%;
 
@@ -15,7 +13,6 @@ const MButton = styled.button`
   border: none;
   outline: none;
   cursor: auto;
-
 
   font-family: "Title";
   -webkit-text-stroke: 2px rgb(100,0,0);

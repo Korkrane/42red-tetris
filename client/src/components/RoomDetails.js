@@ -5,7 +5,6 @@ import { socket } from './Menu'
 import Players from './Players';
 import Chat from './Chat';
 import RoomButton from './RoomButton';
-// import { IconButton } from '@mui/material';
 import './RoomDetails.css';
 
 const RoomDetails = ({me, players, leaveRoom, soloGameMode, gameEnd, gameStarted}) => {
@@ -19,7 +18,6 @@ const RoomDetails = ({me, players, leaveRoom, soloGameMode, gameEnd, gameStarted
     const navigate = useNavigate();
 
 	const sendMessage = () => {
-        console.log('you sent a message');
         socket.emit("sendToChat", {message, roomId:location.state.roomId, name:location.state.userName});
         setMessage('');
     }
@@ -39,8 +37,7 @@ const RoomDetails = ({me, players, leaveRoom, soloGameMode, gameEnd, gameStarted
 
 	useEffect(() => {
         socket.on("receiveMssg", (data) => {
-            console.log("receiveMssg event");
-            console.log(data)
+            console.log("receiveMssg event", data);
             setMessages(previousMessages => [...previousMessages, data]);
         })
 
@@ -68,18 +65,12 @@ const RoomDetails = ({me, players, leaveRoom, soloGameMode, gameEnd, gameStarted
         };
     }, []);
 
-    // useEffect(() => {
-    //     console.log('gameEnd value in roomDetails', gameEnd);
-    //     if(gameEnd === true)
-    //         setFlag(false);
-    // }, [gameEnd])
-
 	return (
 		<>
             {soloGameMode === false ?
                 <>
                     <Box m={2} sx={{position:'absolute', bottom:0, right:0}}>
-                        <button class="glow-on-hover" onClick={hideDetails}>{hide === true ? '+' : '-'}</button>
+                        <button className="glow-on-hover" onClick={hideDetails}>{hide === true ? '+' : '-'}</button>
                     </Box>
                     <Box id="details" m={2} sx={{maxHeight: '100%', display:(hide === true) ? 'none' : 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: '15%', maxWidth: '15%', border: 3, borderRadius: 5, padding: 3, backgroundColor: "rgba(20,20,20, 1)"}}>
                         <Players players={players}/>

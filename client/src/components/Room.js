@@ -32,7 +32,7 @@ const Room = () => {
         return () => {
             socket.off('playersInRoom');
         };
-    }, [location.state.roomId, once, players])
+    }, [location.state.roomId, location.state.soloGameMode, once, players])
 
     const leaveRoom = () => {
         console.log('you leave room ' + location.state.roomId);

@@ -1,5 +1,4 @@
 import { Box } from '@mui/system';
-import { useEffect } from 'react';
 import { Typography, TextField, IconButton } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { grey } from '@mui/material/colors';

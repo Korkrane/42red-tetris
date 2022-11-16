@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyledMiniStage } from './styles/StyledMiniStage';
-
 import Cell from './Cell';
 
 const MiniTetrisGrid = ({ stage }) => (

@@ -6,10 +6,9 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useMediaQuery } from 'react-responsive';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { orange } from '@mui/material/colors';
 import { useEffect, useState } from 'react';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     startICon: {
         margin: 0
     }

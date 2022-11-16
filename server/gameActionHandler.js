@@ -29,9 +29,9 @@ module.exports = function (socket, rooms, client, io) {
         io.in(room.id).emit("gameEnd", winnerGame.playerName, winnerGame.score);
     }
 
-    socket.on('rawDrop', (data) => {
-        console.log('receive rawdrop', data, 'from', client.name);
-        const room = rooms.get(data.roomId);
+    socket.on('drop', (data) => {
+        console.log('receive drop', data, 'from', client.name);
+        const room = rooms.get(data.id);
         const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
         gameToUpdate.drop();
         if (room.allPlayersHaveLost()) {
@@ -43,7 +43,7 @@ module.exports = function (socket, rooms, client, io) {
 
     socket.on('move', (data) => {
         console.log('receive move', data, 'from', client.name);
-        const room = rooms.get(data.roomId);
+        const room = rooms.get(data.id);
         const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
         gameToUpdate.move(data.keyCode);
         if (room.allPlayersHaveLost()) {

@@ -31,7 +31,7 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
         return () => {
             socket.off('gameEnd');
         }
-    }, [setWinner])
+    }, [setWinner, setGameEnd])
 
     useEffect(() => {
         socket.on('gameReseted', (data) => {
@@ -92,7 +92,7 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
                             ? <>
                                 <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5}}>
                                     {games.map((item, index) => (
-                                        <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me} setCounter={setCounter} />
+                                        <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me}/>
                                     ))}
                                 </Box>
                             </>

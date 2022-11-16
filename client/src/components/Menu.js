@@ -14,20 +14,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useMediaQuery } from 'react-responsive'
 import { grey } from '@mui/material/colors';
+
+
 export const socket = socketIO.connect('http://localhost:4000');
-
-
-
-// const initRoom = () => {
-//     const roomId = window.location.hash.split('#')[1];
-//     console.log(`initRoom: roomId is ${roomId}`);
-
-//     if (roomId && typeof roomId !== "undefined") {
-//         console.log("does room exists ?");
-//         const data = JSON.stringify({ id: roomId })
-//         socket.emit('checkRoom', data)
-//     }
-// }
 
 const Menu = () => {
     let navigate = useNavigate();
@@ -40,7 +29,6 @@ const Menu = () => {
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-
         socket.on('navToRoom', (data) => {
             const hash = data.id + '[' + nameInput + ']';
             navigate("/" + hash, {state:{roomId: data.id, userName:nameInput, soloGameMode:data.soloGame}});
@@ -51,24 +39,8 @@ const Menu = () => {
             setErrorMessage(data);
         });
 
-        // socket.on('roomChecked', (...args) => {
-        //     const roomDetails = JSON.parse(args);
-        //     //console.log(roomDetails);
-        //     if (roomDetails.exist === "false") {
-        //         const customroomId = window.location.hash.split('#')[1];
-        //         const e = JSON.stringify({ type: 'custom', id: customroomId })
-        //         socket.emit('createroom', e);
-        //     }
-        //     else {
-        //         const roomId = JSON.stringify({ id: roomDetails.id })
-        //         socket.emit('joinroom', roomId)
-        //     }
-        // });
-
-
         return () => {
             socket.off('navToRoom');
-            // socket.off('roomChecked');
             socket.off('cantJoin');
         };
     }, [navigate, nameInput]);
@@ -99,21 +71,16 @@ const Menu = () => {
         setRoomIdInput(e.target.value);
     };
 
-    const isDesktopOrLaptop = useMediaQuery({ minWidth: 1024 })
-    const isBigScreen = useMediaQuery({ minWidth: 1824 })
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 })
-    const isPortrait = useMediaQuery({ orientation: 'portrait' })
-    const isRetina = useMediaQuery({ minResolution: '2dppx' })
 
     return(
         <>
-
             <div className='Menu'>
-
                 <Title isTabletOrMobile={isTabletOrMobile}>RED-TETRIS</Title>
                 <MButton isTabletOrMobile={isTabletOrMobile}  onClick={handleOpenSolo}>Solo</MButton>
                 <Modal open={openSolo} onClose={handleCloseSolo}>
-                     <Box sx={{position: 'absolute',
+                     <Box sx={{
+                        position: 'absolute',
                         top: '50%',
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
@@ -153,7 +120,8 @@ const Menu = () => {
                 </Modal>
                 <MButton isTabletOrMobile={isTabletOrMobile} onClick={handleOpenJoin}>Join</MButton>
                 <Modal open={openJoin} onClose={handleCloseJoin}>
-                     <Box sx={{position: 'absolute',
+                     <Box sx={{
+                            position: 'absolute',
                             top: '50%',
                             left: '50%',
                             transform: 'translate(-50%, -50%)',
@@ -209,13 +177,6 @@ const Menu = () => {
                             variant="contained"  disabled={nameInput === '' || roomIdInput === '' ? true : false} onClick={joinRoom}>Join</Button>
                     </Box>
                 </Modal>
-                <div id="screen">
-                    {isDesktopOrLaptop && <p>You are a desktop or laptop</p>}
-                    {isBigScreen && <p>You  have a huge screen</p>}
-                    {isTabletOrMobile && <p>You are a tablet or mobile phone</p>}
-                    <p>Your are in {isPortrait ? 'portrait' : 'landscape'} orientation</p>
-                    {isRetina && <p>You are retina</p>}
-                </div>
             </div>
         </>
     );

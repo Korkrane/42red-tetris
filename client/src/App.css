@@ -9,10 +9,9 @@ body {
 }
 
 html {
-  background: url('./bau_fond.png') no-repeat center center fixed;
+  background: url('./appBackground.png') no-repeat center center fixed;
     background-size: cover;
     height: 100%;
-    /* overflow: hidden; */
 }
 
 @font-face {
@@ -22,12 +21,9 @@ html {
 
 #root {
   height: 100%;
-  /* background-image: url('./tetris-multicolored-pattern-4u7ed6koskqhcez1.jpeg');
-  background-size: cover; */
 }
 
 .Menu {
-  /* background-image:url('./tetris-multicolored-pattern-4u7ed6koskqhcez1.jpeg'); */
   display: flex;
   flex-flow: column;
   flex-direction: column;
@@ -35,8 +31,4 @@ html {
   align-items: center;
   gap:20px;
   height:100%;
-}
-
-#screen {
-  color: white;
 }
