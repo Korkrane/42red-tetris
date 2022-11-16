@@ -25,13 +25,26 @@ class Room{
       client.room = this;
     }
 
-    leave(client)
+    remove(client)
     {
-      if(client.room != this){
-        throw new Error('Client not in room');
-      }
       this.clients.delete(client);
       client.room = null;
+    }
+
+    isEmpty()
+    {
+      return (this.clients.size === 0 ? true : false);
+    }
+
+    setNewAdmin()
+    {
+      const randomClient = [...this.clients][Math.floor(Math.random() * this.clients.size)];
+      randomClient.admin = true;
+    }
+
+    allPlayersAreReady()
+    {
+      return ([...this.clients].every(x => x.readyToPlay === true));
     }
   }
 

@@ -69,14 +69,38 @@ module.exports = function (socket, rooms, client, io) {
             const games = room.games;
             io.in(data.id).emit("gamesInRoom", games);
         }
-        room.leave(client);
-        if (room.clients.size === 0) //room empty
-            rooms.delete(room.id)
-        else { //make another client room admin
-            const randomClient = [...room.clients][Math.floor(Math.random() * room.clients.size)];
-            randomClient.admin = true;
-        }
+        room.remove(client);
+        if (room.isEmpty()) //room empty
+            rooms.delete(room.id);
+        else //make another client room admin
+            room.setNewAdmin();
         socket.leave(room.id);
         emitPlayersInRoom(room);
+    });
+
+    socket.on('readyToPlay', (data) => {
+        console.log('receive readyToPlay', data);
+        if (client.readyToPlay === false)
+            client.readyToPlay = true;
+        else
+            client.readyToPlay = false;
+        const room = rooms.get(data.roomId);
+        emitPlayersInRoom(room);
+
+        if (room.allPlayersAreReady()) {
+            console.log("all players are ready");
+            //block joinable room
+            room.hasStarted = true;
+            console.log(room);
+            const games = room.games;
+            console.log('--foreach--')
+            games.forEach(game => {
+                game.setStage();
+            })
+            console.log('--end of foreach--')
+            console.log('emit gameStart');
+            io.in(data.roomId).emit("gameStart");
+        }
+
     });
 };
