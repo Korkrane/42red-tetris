@@ -46,6 +46,20 @@ class Room{
     {
       return ([...this.clients].every(x => x.readyToPlay === true));
     }
+
+    startGame()
+    {
+      this.hasStarted = true;
+      this.games.forEach(game => {
+        game.setStage();
+      })
+    }
+
+    allPlayersHaveLost()
+    {
+      return (this.games.every(game => game.gameOver === true));
+    }
+
   }
 
 module.exports = Room;

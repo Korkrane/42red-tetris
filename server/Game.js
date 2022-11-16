@@ -76,14 +76,12 @@ class Game{
 
     reset()
     {
-        console.log('reset all the game details');
         this.keyCode = null;
         this.stage = this.createStage(20, 12);
         this.gameOver = false;
         this.score = 0;
         this.rows = 0;
         this.level = 0;
-        // this.tetrominoSeed = tetrominoSeed;
         this.tetromino = this.tetrominoSeed[0];
         this.i = 0;
         this.player = this.initPlayer();

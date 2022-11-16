@@ -59,20 +59,18 @@ module.exports = function (socket, rooms, client, io) {
     });
 
     socket.on('leaveRoom', (data) => {
-        console.log()
         client.clearStatus();
         const room = rooms.get(data.id);
 
-        if (room.hasStarted) { //ingame, player leave make him automatically lose.
+        if (room.hasStarted) { //player leaving while game is on make him automatically lose.
             const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
             gameToUpdate.lose();
-            const games = room.games;
-            io.in(data.id).emit("gamesInRoom", games);
+            io.in(data.id).emit("gamesInRoom", room.games);
         }
         room.remove(client);
-        if (room.isEmpty()) //room empty
+        if (room.isEmpty())
             rooms.delete(room.id);
-        else //make another client room admin
+        else
             room.setNewAdmin();
         socket.leave(room.id);
         emitPlayersInRoom(room);
@@ -88,16 +86,7 @@ module.exports = function (socket, rooms, client, io) {
         emitPlayersInRoom(room);
 
         if (room.allPlayersAreReady()) {
-            console.log("all players are ready");
-            //block joinable room
-            room.hasStarted = true;
-            console.log(room);
-            const games = room.games;
-            console.log('--foreach--')
-            games.forEach(game => {
-                game.setStage();
-            })
-            console.log('--end of foreach--')
+            room.startGame();
             console.log('emit gameStart');
             io.in(data.roomId).emit("gameStart");
         }
