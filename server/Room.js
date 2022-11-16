@@ -50,9 +50,25 @@ class Room{
     startGame()
     {
       this.hasStarted = true;
+      this.clients.forEach(client => {
+        client.readyToPlay = true;
+      })
+
       this.games.forEach(game => {
         game.setStage();
       })
+    }
+
+    clean()
+    {
+      const gamesToClean = this.games.filter(game =>
+        [...this.clients].find(({ name }) => name === game.playerName)
+      );
+
+      for (const game of gamesToClean) {
+        game.reset();
+      }
+      this.games = gamesToClean;
     }
 
     allPlayersHaveLost()

@@ -5,23 +5,20 @@ module.exports = function (socket, rooms, client, io) {
         io.in(room.id).emit("playersInRoom", playersInRoom);
     }
 
-    const resetGames = (room) => {
+    const unsetReadyToPlayStatus = (room) => {
         room.hasStarted = false;
         room.clients.forEach(client => {
-            client.resetReady();
+            client.unsetReady();
         })
-        room.games.forEach(game => {
-            game.reset();
-        })
-        io.in(room.id).emit("gamesInRoom", room.games);
     }
 
     const finishGame = (room) => {
         emitGameEnd(room);
-        resetGames(room);
+        unsetReadyToPlayStatus(room);
         emitPlayersInRoom(room);
     }
 
+    //TODO rename as emitResults
     const emitGameEnd = (room) => {
         const highestScore = Math.max.apply(Math, room.games.map(function (o) { return o.score; }));
         const winnerGame = room.games.find(function (o) { return o.score == highestScore; });
@@ -56,7 +53,11 @@ module.exports = function (socket, rooms, client, io) {
     socket.on('resetGame', (data) => {
         console.log('receive resetGame', data);
         const room = rooms.get(data.roomId);
+        room.clean();
+        console.log('emit gamesInRoom');
+        io.in(room.id).emit("gamesInRoom", room.games);
         room.startGame();
+        emitPlayersInRoom(room);
         console.log('emit gameStart');
         io.in(room.id).emit("gameStart");
     });

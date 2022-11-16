@@ -59,9 +59,10 @@ module.exports = function (socket, rooms, client, io) {
     });
 
     socket.on('leaveRoom', (data) => {
-        client.clearStatus();
         const room = rooms.get(data.id);
 
+        //TODO shouldnt emit. but emit on emitResults
+        //allow to tell front that one of the game is over and display the score msg
         if (room.hasStarted) { //player leaving while game is on make him automatically lose.
             const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
             gameToUpdate.lose();
@@ -76,20 +77,26 @@ module.exports = function (socket, rooms, client, io) {
         emitPlayersInRoom(room);
     });
 
-    socket.on('readyToPlay', (data) => {
-        console.log('receive readyToPlay', data);
-        if (client.readyToPlay === false)
-            client.readyToPlay = true;
+    const updateClientStatus = () => {
+        if (!client.isReady())
+            client.setReady();
         else
-            client.readyToPlay = false;
-        const room = rooms.get(data.roomId);
-        emitPlayersInRoom(room);
+            client.unsetReady();
+    }
 
+    const startGame = (room) => {
         if (room.allPlayersAreReady()) {
             room.startGame();
             console.log('emit gameStart');
             io.in(data.roomId).emit("gameStart");
         }
+    }
 
+    socket.on('readyToPlay', (data) => {
+        const room = rooms.get(data.roomId);
+
+        updateClientStatus();
+        emitPlayersInRoom(room);
+        startGame(room);
     });
 };

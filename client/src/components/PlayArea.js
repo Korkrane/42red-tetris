@@ -46,6 +46,7 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
     useEffect(() => {
 
         socket.on('gamesInRoom', (data) => {
+            console.log('received gamesInRoom');
             setGames(data);
         })
 
@@ -59,7 +60,6 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
             setStart(true);
             setGameStarted(true);
             setCounter(3);
-            console.log(counter);
         })
 
 

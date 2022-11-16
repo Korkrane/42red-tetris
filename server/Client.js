@@ -22,14 +22,16 @@ class Client{
       this.admin = true;
     }
 
-    resetReady() {
-      this.readyToPlay = !this.readyToPlay;
+    unsetReady() {
+      this.readyToPlay = false;
     }
 
-    clearStatus()
-    {
-      this.readyToPlay = false;
-      this.admin = false;
+    setReady() {
+      this.readyToPlay = true;
+    }
+
+    isReady() {
+        return(this.readyToPlay === true ? true : false);
     }
   }
 

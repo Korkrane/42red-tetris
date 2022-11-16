@@ -32,6 +32,7 @@ const RoomDetails = ({me, players, leaveRoom, soloGameMode, gameEnd, gameStarted
     };
 
     const resetGame = () => {
+        console.log("emit resetGame event");
         socket.emit('resetGame', { roomId: location.state.roomId });
     }
 
