@@ -79,12 +79,14 @@ module.exports = function (socket, rooms, client, io) {
             io.in(data.id).emit("gamesInRoom", room.games);
         }
         room.remove(client);
-        room.removeGame();
+        //TO DO CHECK UNUSED ROOM CUZ DISAPPEAR DURING GAME
+        // room.removeGame();
         if (room.isEmpty())
             rooms.delete(room.id);
         else
         {
             client.unsetAdmin();
+            client.unsetReady();
             room.setNewAdmin();
         }
         socket.leave(room.id);
