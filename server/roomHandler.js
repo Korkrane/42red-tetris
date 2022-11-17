@@ -57,6 +57,8 @@ module.exports = function (socket, rooms, client, io) {
             {
                 clientJoinRoom(room);
                 moveClientToRoom(room, data);
+                const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
+                console.log(playersInRoom);
                 common.emitPlayersInRoom(room);
             }
         }
@@ -77,7 +79,10 @@ module.exports = function (socket, rooms, client, io) {
         if (room.isEmpty())
             rooms.delete(room.id);
         else
+        {
+            client.unsetAdmin();
             room.setNewAdmin();
+        }
         socket.leave(room.id);
         common.emitPlayersInRoom(room);
     });

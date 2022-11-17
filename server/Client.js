@@ -19,7 +19,7 @@ class Client{
     }
 
     unsetAdmin() {
-      this.admin = true;
+      this.admin = false;
     }
 
     unsetReady() {
