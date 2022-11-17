@@ -14,18 +14,18 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
     const location = useLocation();
     const [counter, setCounter] = useState(0);
     const [winner, setWinner] = useState('');
-    const [winnerScore, setWinnerscore] = useState(0);
-
+    const [results, setResults] = useState({}
+        )
     useEffect(() => {
         counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
     }, [counter])
 
     useEffect(() => {
-        socket.on('gameEnd', (...data) => {
-            console.log('gameEnd');
-            setWinner(data[0]);
-            setWinnerscore(data[1]);
+        socket.on('results', (data) => {
+            console.log('results');
+            setWinner(data.name);
             setGameEnd(true);
+            setResults(data)
         })
 
         return () => {
@@ -84,8 +84,8 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
             {
                 winner !== ''
                 ? soloGameMode === true
-                        ? <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}><span style={{ color: 'white' }}>score: </span>{winnerScore} pts</Title>
-                        : <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{winner} <span style={{ color: 'white' }}>has won with</span> {winnerScore} <span style={{ color: 'white' }}>pts</span></Title>
+                        ? <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}><span style={{ color: 'white' }}>score: </span>{results.score} pts</Title>
+                        : <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{results.name} <span style={{ color: 'white' }}>has won with</span> {results.score} <span style={{ color: 'white' }}>pts</span></Title>
                 : counter !== 0
                         ? <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{counter}</Title>
                         : start === true

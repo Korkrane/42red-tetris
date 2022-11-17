@@ -13,17 +13,15 @@ module.exports = function (socket, rooms, client, io) {
     }
 
     const finishGame = (room) => {
-        emitGameEnd(room);
+        emitResults(room);
         unsetReadyToPlayStatus(room);
         emitPlayersInRoom(room);
     }
 
-    //TODO rename as emitResults
-    const emitGameEnd = (room) => {
+    const emitResults = (room) => {
         const highestScore = Math.max.apply(Math, room.games.map(function (o) { return o.score; }));
         const winnerGame = room.games.find(function (o) { return o.score == highestScore; });
-        winnerGame.setWin();
-        io.in(room.id).emit("gameEnd", winnerGame.playerName, winnerGame.score);
+        io.in(room.id).emit("results", {name:winnerGame.playerName, score:winnerGame.score});
     }
 
     socket.on('drop', (data) => {
