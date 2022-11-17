@@ -50,9 +50,9 @@ class Room{
     startGame()
     {
       this.hasStarted = true;
-      this.clients.forEach(client => {
-        client.readyToPlay = true;
-      })
+      // this.clients.forEach(client => {
+      //   client.readyToPlay = true;
+      // })
 
       this.games.forEach(game => {
         game.setStage();

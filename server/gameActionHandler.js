@@ -48,16 +48,33 @@ module.exports = function (socket, rooms, client, io) {
         io.in(room.id).emit("playerMoved", room.games);
     });
 
-    socket.on('resetGame', (data) => {
-        console.log('receive resetGame', data);
-        const room = rooms.get(data.roomId);
+    const startGame = (room) => {
+        if (room.allPlayersAreReady()) {
+            room.startGame();
+            console.log('emit gameStart');
+            io.in(room.id).emit("gameStart");
+        }
+    }
+
+    const cleanGames = (room) => {
         room.clean();
         console.log('emit gamesInRoom');
         io.in(room.id).emit("gamesInRoom", room.games);
-        room.startGame();
+    }
+
+    const setReadyToPlayStatus = (room) => {
+        room.clients.forEach(client => {
+            client.setReady();
+        })
+    }
+
+    socket.on('resetGame', (data) => {
+        console.log('receive resetGame', data);
+        const room = rooms.get(data.roomId);
+        cleanGames(room);
+        setReadyToPlayStatus(room);
         emitPlayersInRoom(room);
-        console.log('emit gameStart');
-        io.in(room.id).emit("gameStart");
+        startGame(room);
     });
 
 }
