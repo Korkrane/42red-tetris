@@ -31,6 +31,18 @@ class Room{
       client.room = null;
     }
 
+    removeGame()
+    {
+      const gamesToClean = this.games.filter(game =>
+        [...this.clients].find(({ name }) => name === game.playerName)
+      );
+
+      // for (const game of gamesToClean) {
+      //   game.reset();
+      // }
+      this.games = gamesToClean;
+    }
+
     isEmpty()
     {
       return (this.clients.size === 0 ? true : false);

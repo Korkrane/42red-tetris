@@ -30,6 +30,7 @@ module.exports = function (socket, rooms, client, io) {
 
 
     const roomIsJoinable = (room) => {
+        console.log(room.games);
         const roomHasDuplicatePlayerName = room.games.find(({ playerName }) => playerName === client.name)
 
         if (room.hasStarted === true) {
@@ -44,6 +45,7 @@ module.exports = function (socket, rooms, client, io) {
     }
 
     socket.on('joinRoom', (data) => {
+        console.log('joinRoom event')
         client.setName(data.name);
         const room = rooms.get(data.id);
 
@@ -55,6 +57,7 @@ module.exports = function (socket, rooms, client, io) {
         else { //check for exceptions then make the client join the room
             if(roomIsJoinable(room))
             {
+                console.log('room is joinable');
                 clientJoinRoom(room);
                 moveClientToRoom(room, data);
                 const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
@@ -76,6 +79,7 @@ module.exports = function (socket, rooms, client, io) {
             io.in(data.id).emit("gamesInRoom", room.games);
         }
         room.remove(client);
+        room.removeGame();
         if (room.isEmpty())
             rooms.delete(room.id);
         else
