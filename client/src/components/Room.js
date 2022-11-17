@@ -44,7 +44,7 @@ const Room = () => {
         <>
             <Box sx={{ display: 'flex', maxHeight: '100%', minHeight: '100%', minWidth: '100%', justifyContent: 'flex-start'}}>
                 <RoomDetails me={location.state.userName}  players={players} leaveRoom={leaveRoom} soloGameMode={location.state.soloGameMode} gameEnd={gameEnd} gameStarted={gameStarted} />
-                <PlayArea me={location.state.userName} soloGameMode={location.state.soloGameMode} setGameEnd={setGameEnd} setGameStarted={setGameStarted} />
+                <PlayArea me={location.state.userName} soloGameMode={location.state.soloGameMode} setGameEnd={setGameEnd} setGameStarted={setGameStarted} gameStarted={gameStarted} />
             </Box>
         </>
     );

@@ -6,16 +6,14 @@ import { socket } from './Menu'
 import { Title } from './Button';
 import { useMediaQuery } from 'react-responsive';
 
-const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
+const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted, gameStarted }) => {
+
+    const location = useLocation();
 
     const [games, setGames] = useState([]);
-    const [once, setOnce] = useState(false);
-    const [start, setStart] = useState(false);
-    const location = useLocation();
     const [counter, setCounter] = useState(0);
-    const [winner, setWinner] = useState('');
-    const [results, setResults] = useState({}
-        )
+    const [results, setResults] = useState({})
+
     useEffect(() => {
         counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
     }, [counter])
@@ -23,7 +21,6 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
     useEffect(() => {
         socket.on('results', (data) => {
             console.log('results');
-            setWinner(data.name);
             setGameEnd(true);
             setResults(data)
         })
@@ -31,17 +28,13 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
         return () => {
             socket.off('gameEnd');
         }
-    }, [setWinner, setGameEnd])
+    }, [setGameEnd])
 
     useEffect(() => {
-        socket.on('gameReseted', (data) => {
-            console.log('gameReseted');
-        })
-
-        return () => {
-            socket.off('gameReseted');
-        }
-    }, [games])
+        socket.emit("getGames", { roomId: location.state.roomId });
+        if (soloGameMode === true)
+            setCounter(3);
+    }, [])
 
     useEffect(() => {
 
@@ -56,43 +49,33 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted }) => {
 
         socket.on('gameStart', (data) => {
             console.log('gameStart event received');
-            setWinner('');
-            setStart(true);
+            setResults({});
             setGameStarted(true);
             setCounter(3);
         })
-
-
-        if (once === false) {
-            console.log('should pop once games');
-            socket.emit("getGames", { roomId: location.state.roomId });
-            if (soloGameMode === true)
-                setCounter(5);
-        }
-        setOnce(true);
 
         return () => {
             socket.off('gamesInRoom');
             socket.off('playerMoved');
             socket.off('gameStart');
         };
-    }, [games, location.state.roomId, once, soloGameMode, counter, setGameStarted, setStart,setCounter])
+    }, [games, location.state.roomId, soloGameMode, counter, setGameStarted,setCounter])
 
     const isTabletOrMobile = useMediaQuery({ maxWidth: 1024 })
     return(
         <>
             {
-                winner !== ''
+                results.name
                 ? soloGameMode === true
                         ? <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}><span style={{ color: 'white' }}>score: </span>{results.score} pts</Title>
                         : <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{results.name} <span style={{ color: 'white' }}>has won with</span> {results.score} <span style={{ color: 'white' }}>pts</span></Title>
                 : counter !== 0
                         ? <Title isTabletOrMobile={isTabletOrMobile} style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: 'auto', marginBottom: 'auto' }}>{counter}</Title>
-                        : start === true
+                        : gameStarted === true
                             ? <>
                                 <Box id='PlayArea' m={2} sx={{ display: 'flex', flex: '100%', flexWrap: 'wrap', flexGrow: 1, borderRadius: 5}}>
                                     {games.map((item, index) => (
-                                        <Tetris key={item.playerName + index} start={start} name={item.playerName} game={item} me={me}/>
+                                        <Tetris key={item.playerName + index} start={gameStarted} name={item.playerName} game={item} me={me}/>
                                     ))}
                                 </Box>
                             </>
