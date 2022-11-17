@@ -98,7 +98,7 @@ module.exports = function (socket, rooms, client, io) {
         if (room.allPlayersAreReady()) {
             room.startGame();
             console.log('emit gameStart');
-            io.in(data.roomId).emit("gameStart");
+            io.in(room.id).emit("gameStart");
         }
     }
 
