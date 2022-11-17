@@ -39,10 +39,19 @@ const finishGame = (room) => {
     emitPlayersInRoom(room);
 }
 
+const startGame = (room) => {
+    if (room.allPlayersAreReady()) {
+        room.startGame();
+        console.log('emit gameStart');
+        io.in(room.id).emit("gameStart");
+        dropLoop(room);
+    }
+}
+
 let dropInterval;
 
 const dropLoop = (room) => {
     dropInterval = setInterval(drop, 1000, room);
 }
 
-module.exports = { dropLoop, emitResults, unsetReadyToPlayStatus, finishGame, drop}
+module.exports = { dropLoop, emitResults, unsetReadyToPlayStatus, finishGame, drop, startGame, emitPlayersInRoom }

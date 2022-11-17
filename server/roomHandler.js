@@ -14,13 +14,7 @@ module.exports = function (socket, rooms, client, io) {
         rooms.set(room.id, room);
         clientJoinRoom(room)
         client.setAdmin();
-
         return room;
-    }
-
-    const emitPlayersInRoom = (room) => {
-        const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
-        io.in(room.id).emit("playersInRoom", playersInRoom);
     }
 
     const moveClientToRoom = (room, data) => {
@@ -31,7 +25,7 @@ module.exports = function (socket, rooms, client, io) {
         client.setName(data.name);
         const newRoom = createRoom(helpers.createId());
         moveClientToRoom(newRoom, data);
-        emitPlayersInRoom(newRoom);
+        common.emitPlayersInRoom(newRoom);
     });
 
 
@@ -46,7 +40,6 @@ module.exports = function (socket, rooms, client, io) {
             socket.emit("cantJoin", '- duplicate playername');
             return false;
         }
-
         return true;
     }
 
@@ -57,17 +50,18 @@ module.exports = function (socket, rooms, client, io) {
         if (room === undefined) { //join a non-existent room
             const newRoom = createRoom(data.id);
             moveClientToRoom(newRoom, data);
-            emitPlayersInRoom(newRoom);
+            common.emitPlayersInRoom(newRoom);
         }
         else { //check for exceptions then make the client join the room
             if(roomIsJoinable(room))
             {
                 clientJoinRoom(room);
                 moveClientToRoom(room, data);
-                emitPlayersInRoom(room);
+                common.emitPlayersInRoom(room);
             }
         }
     });
+
 
     socket.on('leaveRoom', (data) => {
         const room = rooms.get(data.id);
@@ -85,7 +79,7 @@ module.exports = function (socket, rooms, client, io) {
         else
             room.setNewAdmin();
         socket.leave(room.id);
-        emitPlayersInRoom(room);
+        common.emitPlayersInRoom(room);
     });
 
     const updateClientStatus = () => {
@@ -95,58 +89,11 @@ module.exports = function (socket, rooms, client, io) {
             client.unsetReady();
     }
 
-    // let drop;
-
-    const startGame = (room) => {
-        if (room.allPlayersAreReady()) {
-            room.startGame();
-            console.log('emit gameStart');
-            io.in(room.id).emit("gameStart");
-            common.dropLoop(room);
-            // drop = setInterval(lol, 1000, room);
-        }
-    }
-
     socket.on('readyToPlay', (data) => {
         const room = rooms.get(data.roomId);
 
         updateClientStatus();
-        emitPlayersInRoom(room);
-        startGame(room);
+        common.emitPlayersInRoom(room);
+        common.startGame(room);
     });
-
-    // const emitResults = (room) => {
-    //     const highestScore = Math.max.apply(Math, room.games.map(function (o) { return o.score; }));
-    //     const winnerGame = room.games.find(function (o) { return o.score == highestScore; });
-    //     io.in(room.id).emit("results", { name: winnerGame.playerName, score: winnerGame.score });
-    //     clearInterval(drop);
-    // }
-
-    // const unsetReadyToPlayStatus = (room) => {
-    //     room.hasStarted = false;
-    //     room.clients.forEach(client => {
-    //         client.unsetReady();
-    //     })
-    // }
-
-    // const finishGame = (room) => {
-    //     emitResults(room);
-    //     unsetReadyToPlayStatus(room);
-    //     emitPlayersInRoom(room);
-    // }
-
-    // function lol(room)
-    // {
-    //     const gamesToDrop = [...room.games]
-    //     for (const game of gamesToDrop) {
-    //         game.drop();
-    //     }
-    //     if (room.allPlayersHaveLost()) {
-    //         common.finishGame(room);
-    //         return;
-    //     }
-    //     io.in(room.id).emit("playerMoved", room.games);
-    // }
-
-
 };
