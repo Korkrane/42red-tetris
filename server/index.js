@@ -6,7 +6,7 @@ const helpers = require("./helpers");
 const PORT = 4000;
 
 const httpServer = require("http").createServer();
-const io = require("socket.io")(httpServer, {
+let io = require("socket.io")(httpServer, {
 	cors: {
 	  origin: "http://localhost:3000"
 	}
@@ -17,8 +17,9 @@ app.use(cors());
 const rooms = new Map;
 
 io.on('connection', (socket) => {
-		console.log(`⚡: ${socket.id} user just connected!`);
-		const client = new Client(socket, helpers.createName())
+
+	console.log(`⚡: ${socket.id} user just connected!`);
+	const client = new Client(socket, helpers.createName())
 
 	socket.on('disconnect', () => {
 		console.log('🔥: A user disconnected');
@@ -36,8 +37,11 @@ io.on('connection', (socket) => {
 	require('./chatHandler')(socket, io);
 	require('./gameActionHandler')(socket, rooms, client, io);
 	require('./getRoomDataHandler')(socket, rooms, client, io);
+
 	return io;
 });
+
+exports.io  = io;
 
 httpServer.listen(PORT, () => {
 	console.log(`Server listening on ${PORT}`);

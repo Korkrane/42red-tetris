@@ -25,15 +25,15 @@ module.exports = function (socket, rooms, client, io) {
     }
 
     socket.on('drop', (data) => {
-        console.log('receive drop', data, 'from', client.name);
-        const room = rooms.get(data.id);
-        const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
-        gameToUpdate.drop();
-        if (room.allPlayersHaveLost()) {
-            finishGame(room);
-            return ;
-        }
-        io.in(room.id).emit("playerMoved", room.games);
+        // console.log('receive drop', data, 'from', client.name);
+        // const room = rooms.get(data.id);
+        // const gameToUpdate = room.games.find(({ playerName }) => playerName === client.name);
+        // gameToUpdate.drop();
+        // if (room.allPlayersHaveLost()) {
+        //     finishGame(room);
+        //     return ;
+        // }
+        // io.in(room.id).emit("playerMoved", room.games);
     });
 
     socket.on('move', (data) => {

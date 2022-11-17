@@ -44,7 +44,12 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted, gameStarted })
         })
 
         socket.on('playerMoved', (data) => {
+            console.log('playerMoved data received');
             setGames(data);
+        })
+
+        socket.on('test', (data) => {
+            console.log(data);
         })
 
         socket.on('gameStart', (data) => {
@@ -58,6 +63,7 @@ const PlayArea = ({ me, soloGameMode, setGameEnd, setGameStarted, gameStarted })
             socket.off('gamesInRoom');
             socket.off('playerMoved');
             socket.off('gameStart');
+            socket.off('test');
         };
     }, [games, location.state.roomId, soloGameMode, counter, setGameStarted,setCounter])
 

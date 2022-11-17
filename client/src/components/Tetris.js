@@ -11,29 +11,29 @@ import { socket } from './Menu';
 
 const Tetris = ({start, name, game, me}) => {
     const location = useLocation();
-    const [dropTime, setDropTime] = useState(null);
+    // const [dropTime, setDropTime] = useState(null);
 
-    useEffect(() => {
-        if (start === true)
-            setDropTime(500);
-    }, [start])
+    // useEffect(() => {
+    //     if (start === true)
+    //         setDropTime(500);
+    // }, [start])
 
-    useEffect(() => {
-        setDropTime(500 / (game.level + 1) + 400);
-    }, [game.level])
+    // useEffect(() => {
+    //     setDropTime(500 / (game.level + 1) + 400);
+    // }, [game.level])
 
-    const drop = () => {
-        if (start === true && me === name && !game.gameOver)
-        {
-            console.log("emit drop");
-            socket.emit("drop", { id: location.state.roomId });
-        }
-    };
+    // const drop = () => {
+    //     if (start === true && me === name && !game.gameOver)
+    //     {
+    //         console.log("emit drop");
+    //         socket.emit("drop", { id: location.state.roomId });
+    //     }
+    // };
 
-    useInterval(() => {
-        if(!game.gameOver)
-            drop();
-    }, dropTime);
+    // useInterval(() => {
+    //     if(!game.gameOver)
+    //         drop();
+    // }, dropTime);
 
     const move = ({ keyCode }) => {
         if (me === name && start === true && !game.gameOver)

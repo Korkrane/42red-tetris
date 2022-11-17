@@ -1,5 +1,6 @@
 const Room = require('./Room');
 const helpers = require("./helpers");
+const common = require("./common");
 
 module.exports = function (socket, rooms, client, io) {
 
@@ -94,11 +95,15 @@ module.exports = function (socket, rooms, client, io) {
             client.unsetReady();
     }
 
+    // let drop;
+
     const startGame = (room) => {
         if (room.allPlayersAreReady()) {
             room.startGame();
             console.log('emit gameStart');
             io.in(room.id).emit("gameStart");
+            common.dropLoop(room);
+            // drop = setInterval(lol, 1000, room);
         }
     }
 
@@ -109,4 +114,39 @@ module.exports = function (socket, rooms, client, io) {
         emitPlayersInRoom(room);
         startGame(room);
     });
+
+    // const emitResults = (room) => {
+    //     const highestScore = Math.max.apply(Math, room.games.map(function (o) { return o.score; }));
+    //     const winnerGame = room.games.find(function (o) { return o.score == highestScore; });
+    //     io.in(room.id).emit("results", { name: winnerGame.playerName, score: winnerGame.score });
+    //     clearInterval(drop);
+    // }
+
+    // const unsetReadyToPlayStatus = (room) => {
+    //     room.hasStarted = false;
+    //     room.clients.forEach(client => {
+    //         client.unsetReady();
+    //     })
+    // }
+
+    // const finishGame = (room) => {
+    //     emitResults(room);
+    //     unsetReadyToPlayStatus(room);
+    //     emitPlayersInRoom(room);
+    // }
+
+    // function lol(room)
+    // {
+    //     const gamesToDrop = [...room.games]
+    //     for (const game of gamesToDrop) {
+    //         game.drop();
+    //     }
+    //     if (room.allPlayersHaveLost()) {
+    //         common.finishGame(room);
+    //         return;
+    //     }
+    //     io.in(room.id).emit("playerMoved", room.games);
+    // }
+
+
 };
