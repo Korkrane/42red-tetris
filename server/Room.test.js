@@ -21,6 +21,14 @@ describe("Game class", () => {
         expect(room.clients.size).toBe(1);
     });
 
+    it('allPlayersAreReady', () => {
+        room.addClient(client);
+        client.setReady();
+        expect(room.allPlayersAreReady()).toBe(true);
+        expect(room.isEmpty()).toBe(false);
+    });
+
+
     it('addClient', () => {
         room.addClient(client);
         room.remove(client)
@@ -39,13 +47,13 @@ describe("Game class", () => {
 
     it('clean', () => {
         room.clean()
-        expect(room.games.length).toBe(3);
+        expect(room.games.length).toBe(4);
     });
 
 
     it('removeGame', () => {
         room.removeGame()
-        expect(room.games.length).toBe(3);
+        expect(room.games.length).toBe(4);
     });
 
     it('startGame', () => {
