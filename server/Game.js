@@ -21,10 +21,12 @@ class Game{
         this.win = false;
     }
 
+    //tested
     setWin() {
         this.win = true;
     }
 
+    //tested
     lose()
     {
         console.log('gameover');
@@ -54,6 +56,7 @@ class Game{
         this.miniStage = newStage;
     }
 
+
     resetPlayer()
     {
         //tetromino selection
@@ -70,8 +73,6 @@ class Game{
         this.player.tetromino = this.tetromino.shape;
         this.player.pos = { x: 12 / 2 - 2, y: 0 };
         this.player.collided = false;
-
-
     }
 
     reset()
@@ -132,6 +133,7 @@ class Game{
     }
 
     updatePlayerPos({x, y, collided}) {
+        console.log('update player pos', this.player.pos);
         this.player.collided = collided;
         this.player.pos.x += x;
         this.player.pos.y += y;
@@ -140,12 +142,15 @@ class Game{
 
     drop()
     {
+        console.log('--------');
         if (!this.checkCollision(this.player, this.stage, { x: 0, y: 1 })) {
             this.updatePlayerPos({ x: 0, y: 1, collided: false });
         } else {
             if (this.player.pos.y < 1) {
                 this.lose();
+                return ;
             }
+            console.log('has collided');
             this.updatePlayerPos({ x: 0, y: 0, collided: true });
         }
     }
@@ -201,6 +206,7 @@ class Game{
         return { tetromino: this.tetromino.shape, collided: false, pos: this.initPosition() };
     }
 
+    //tested
     initPosition() {
         return { x: 12 / 2 - 2, y: 0 };
     }
@@ -210,6 +216,7 @@ class Game{
         return Array.from(Array(y), () => new Array(x).fill([0, 'clear']),);
     }
 
+    //tested
     updateKey(key)
     {
         this.keyCode = key;

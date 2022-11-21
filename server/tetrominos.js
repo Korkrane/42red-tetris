@@ -1,3 +1,6 @@
+const { access } = require("fs");
+const { Interface } = require("readline");
+
 TETROMINOS = {
     0: { letter: 'init', shape: [[0]], color: '0, 0, 0' },
     I: {

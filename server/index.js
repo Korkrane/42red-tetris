@@ -33,6 +33,12 @@ io.on('connection', (socket) => {
 		}
 	});
 
+
+	// socket.on('joinRoom', (data) => {
+	// 	console.log('joinRoom event')
+	// 	...
+	// });
+
 	require('./roomHandler')(socket, rooms, client, io);
 	require('./chatHandler')(socket, io);
 	require('./gameActionHandler')(socket, rooms, client, io);
@@ -41,8 +47,8 @@ io.on('connection', (socket) => {
 	return io;
 });
 
-exports.io  = io;
+exports.io = io;
 
-httpServer.listen(PORT, () => {
+exports.server = httpServer.listen(PORT, () => {
 	console.log(`Server listening on ${PORT}`);
 });

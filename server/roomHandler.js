@@ -59,6 +59,7 @@ module.exports = function (socket, rooms, client, io) {
             {
                 console.log('room is joinable');
                 clientJoinRoom(room);
+                //TODO refacto avec le if du dessus possible
                 moveClientToRoom(room, data);
                 const playersInRoom = [...room.clients].map(x => ({ name: x.name, status: x.readyToPlay, admin: x.admin }));
                 console.log(playersInRoom);
