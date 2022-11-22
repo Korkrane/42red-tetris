@@ -22,6 +22,7 @@ module.exports = function (socket, rooms, client, io) {
     }
 
     socket.on('createRoom', (data) => {
+        console.log('nnn');
         client.setName(data.name);
         const newRoom = createRoom(helpers.createId());
         moveClientToRoom(newRoom, data);
@@ -30,7 +31,7 @@ module.exports = function (socket, rooms, client, io) {
 
 
     const roomIsJoinable = (room) => {
-        console.log(room.games);
+        // console.log(room.games);
         const roomHasDuplicatePlayerName = room.games.find(({ playerName }) => playerName === client.name)
 
         if (room.hasStarted === true) {
@@ -45,7 +46,6 @@ module.exports = function (socket, rooms, client, io) {
     }
 
     socket.on('joinRoom', (data) => {
-        console.log('joinRoom event')
         client.setName(data.name);
         const room = rooms.get(data.id);
 
@@ -71,7 +71,6 @@ module.exports = function (socket, rooms, client, io) {
 
     socket.on('leaveRoom', (data) => {
         const room = rooms.get(data.id);
-
         //TODO shouldnt emit. but emit on emitResults
         //allow to tell front that one of the game is over and display the score msg
         if (room.hasStarted) { //player leaving while game is on make him automatically lose.
@@ -95,6 +94,7 @@ module.exports = function (socket, rooms, client, io) {
     });
 
     const updateClientStatus = () => {
+        console.log(client);
         if (!client.isReady())
             client.setReady();
         else
@@ -102,6 +102,7 @@ module.exports = function (socket, rooms, client, io) {
     }
 
     socket.on('readyToPlay', (data) => {
+        console.log('lol', data, rooms);
         const room = rooms.get(data.roomId);
 
         updateClientStatus();

@@ -15,11 +15,12 @@ let io = require("socket.io")(httpServer, {
 app.use(cors());
 
 const rooms = new Map;
+var client;
 
 io.on('connection', (socket) => {
 
 	console.log(`⚡: ${socket.id} user just connected!`);
-	const client = new Client(socket, helpers.createName())
+	client = new Client(socket, helpers.createName())
 
 	socket.on('disconnect', () => {
 		console.log('🔥: A user disconnected');
@@ -47,6 +48,8 @@ io.on('connection', (socket) => {
 	return io;
 });
 
+exports.rooms = rooms;
+exports.player = client;
 exports.io = io;
 
 exports.server = httpServer.listen(PORT, () => {
